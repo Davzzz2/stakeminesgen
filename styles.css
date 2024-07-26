@@ -53,6 +53,12 @@ body {
     border: 2px solid lime;
 }
 
+.cell.defaultDiamond {
+    background-image: url('diamond.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
 
 #minesForm {
     margin-bottom: 20px;
