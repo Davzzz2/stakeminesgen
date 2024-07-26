@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mines Game Board</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Stake Mines Generator by Dave</h1>
+        <div class="wrapper">
+            <form id="minesForm">
+                <label for="mines">Number of Mines:</label>
+                <input type="number" id="mines" name="mines" min="1" max="24" required>
+                <label for="diamonds">Number of Diamonds:</label>
+                <input type="number" id="diamonds" name="diamonds" min="1" max="25" required>
+                <button type="button" onclick="generateBoard()">Generate Board</button>
+            </form>
+            <div id="board"></div>
+            <div id="results"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
