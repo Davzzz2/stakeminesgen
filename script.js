@@ -76,7 +76,7 @@ function generateBoard() {
     const winAmount = betSize * multiplier;
     const results = `
 <strong>Multiplier is:</strong> ${multiplier.toFixed(1)}x<br>
-<strong>Win Amount is:</strong> $${winAmount.toFixed(3)}<br>
+<strong>Win Amount is:</strong> $${winAmount.toFixed(2)}<br>
 <strong>Min. Increase on Loss is:</strong> ${minIncreaseOnLoss.toFixed(5)}%<br>
 <strong>Winning Chance is:</strong> ${winningChance.toFixed(5)}%
 `;
