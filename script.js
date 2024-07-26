@@ -1,37 +1,7 @@
-function factorial(number) {
-    let value = 1;
-    for (let i = number; i > 1; i--) {
-        value *= i;
-    }
-    return value;
-}
-
-function combination(n, d) {
-    if (n == d) return 1;
-    return factorial(n) / (factorial(d) * factorial(n - d));
-}
-
-function calculateResults(mines, diamonds) {
-    const totalCells = 25;
-    const safeCells = totalCells - mines;
-    const first = combination(totalCells, diamonds);
-    const second = combination(safeCells, diamonds);
-    const result = 0.99 * (first / second);
-    const roundedResult = Math.round(result * 100) / 100;
-    const minIncreaseOnLoss = Math.round((100 / (roundedResult - 1)) * 100) / 100;
-    const winningChance = Math.round((99 / roundedResult) * 100000) / 100000;
-
-    return {
-        multiplier: roundedResult,
-        minIncreaseOnLoss: minIncreaseOnLoss,
-        winningChance: winningChance
-    };
-}
-
 function generateBoard() {
     const mines = parseInt(document.getElementById('mines').value);
     const diamonds = parseInt(document.getElementById('diamonds').value);
-    const totalCells = 25; 
+    const totalCells = 25;
     const cells = Array(totalCells).fill(''); 
 
     if (mines + diamonds > totalCells) {
@@ -48,7 +18,7 @@ function generateBoard() {
         cells[randomIndex] = 'mine';
     }
 
-    // Place diamonds in the remaining cells until the desired number of diamonds is placed
+    // Place specified diamonds on the board
     let diamondsPlaced = 0;
     for (let i = 0; i < totalCells && diamondsPlaced < diamonds; i++) {
         if (cells[i] === '') {
@@ -57,11 +27,10 @@ function generateBoard() {
         }
     }
 
-    // Ensure any remaining diamonds are placed if not enough blank cells were initially filled
-    for (let i = 0; i < totalCells && diamondsPlaced < diamonds; i++) {
+    // Fill remaining blank cells with diamonds
+    for (let i = 0; i < totalCells; i++) {
         if (cells[i] === '') {
-            cells[i] = 'diamond';
-            diamondsPlaced++;
+            cells[i] = 'defaultDiamond';
         }
     }
 
