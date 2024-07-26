@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="styles.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stake Mines Generator</title>
+    <title>Mines Game Board</title>
     <link rel="icon" href="favicon.png" type="image/png"> <!-- Updated to use favicon.png -->
 </head>
 
@@ -18,6 +18,8 @@
                 <input type="number" id="mines" name="mines" min="1" max="24" required>
                 <label for="diamonds">Number of Diamonds:</label>
                 <input type="number" id="diamonds" name="diamonds" min="1" max="25" required>
+                <label for="betSize">Bet Size:</label>
+                <input type="number" id="betSize" name="betSize" min="1" required>
                 <button type="button" onclick="generateBoard()">Generate Board</button>
             </form>
             <div id="board"></div>
