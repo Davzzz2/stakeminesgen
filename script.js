@@ -1,3 +1,33 @@
+function factorial(number) {
+    let value = 1;
+    for (let i = number; i > 1; i--) {
+        value *= i;
+    }
+    return value;
+}
+
+function combination(n, d) {
+    if (n == d) return 1;
+    return factorial(n) / (factorial(d) * factorial(n - d));
+}
+
+function calculateResults(mines, diamonds) {
+    const totalCells = 25;
+    const safeCells = totalCells - mines;
+    const first = combination(totalCells, diamonds);
+    const second = combination(safeCells, diamonds);
+    const result = 0.99 * (first / second);
+    const roundedResult = Math.round(result * 100) / 100;
+    const minIncreaseOnLoss = Math.round((100 / (roundedResult - 1)) * 100) / 100;
+    const winningChance = Math.round((99 / roundedResult) * 100000) / 100000;
+
+    return {
+        multiplier: roundedResult,
+        minIncreaseOnLoss: minIncreaseOnLoss,
+        winningChance: winningChance
+    };
+}
+
 function generateBoard() {
     const mines = parseInt(document.getElementById('mines').value);
     const diamonds = parseInt(document.getElementById('diamonds').value);
