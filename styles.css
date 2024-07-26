@@ -9,16 +9,15 @@ body {
     margin: 0;
 }
 
-.container {
-    text-align: center;
-    width: 100%;
-}
-
 .header-links {
     display: flex;
     justify-content: space-around;
-    width: 80%;
-    margin: 20px 0;
+    width: 100%;
+    padding: 20px 0;
+    background-color: black;
+    position: fixed;
+    top: 0;
+    left: 0;
 }
 
 .header-links a {
@@ -35,6 +34,12 @@ body {
 .header-links a:hover {
     background-color: white;
     color: black;
+}
+
+.container {
+    text-align: center;
+    width: 100%;
+    margin-top: 80px; /* Adjust to ensure content is not hidden behind fixed header */
 }
 
 .wrapper {
