@@ -75,10 +75,10 @@ function generateBoard() {
     const { multiplier, minIncreaseOnLoss, winningChance } = calculateResults(mines, diamonds);
     const winAmount = betSize * multiplier;
     const results = `
-<strong>Multiplier is:</strong> ${multiplier}x<br>
-<strong>Min. Increase on Loss is:</strong> ${minIncreaseOnLoss}%<br>
-<strong>Winning Chance is:</strong> ${winningChance}%<br>
-<strong>Win Amount:</strong> $${winAmount.toFixed(2)}
+<strong>Multiplier is:</strong> ${multiplier.toFixed(1)}x<br>
+<strong>Win Amount is:</strong> $${winAmount.toFixed(3)}<br>
+<strong>Min. Increase on Loss is:</strong> ${minIncreaseOnLoss.toFixed(0)}%<br>
+<strong>Winning Chance is:</strong> ${winningChance.toFixed(5)}%
 `;
     document.getElementById('results').innerHTML = results;
 }
