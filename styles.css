@@ -95,3 +95,10 @@ button {
 button:hover {
     background-color: #3498db;
 }
+
+.logo {
+    vertical-align: middle;
+    margin-right: 10px;
+    width: 40px; /* Adjust size as needed */
+    height: auto;
+}
