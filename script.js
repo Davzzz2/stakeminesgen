@@ -17,12 +17,11 @@ function calculateResults(mines, diamonds) {
     const first = combination(totalCells, diamonds);
     const second = combination(safeCells, diamonds);
     const result = 0.99 * (first / second);
-    const roundedResult = Math.round(result * 100) / 100;
-    const minIncreaseOnLoss = Math.round((100 / (roundedResult - 1)) * 100) / 100;
-    const winningChance = Math.round((99 / roundedResult) * 100000) / 100000;
+    const minIncreaseOnLoss = (100 / (result - 1));
+    const winningChance = (99 / result);
 
     return {
-        multiplier: roundedResult,
+        multiplier: result,
         minIncreaseOnLoss: minIncreaseOnLoss,
         winningChance: winningChance
     };
@@ -31,8 +30,9 @@ function calculateResults(mines, diamonds) {
 function generateBoard() {
     const mines = parseInt(document.getElementById('mines').value);
     const diamonds = parseInt(document.getElementById('diamonds').value);
+    const betSize = parseFloat(document.getElementById('betSize').value);
     const totalCells = 25;
-    const cells = Array(totalCells).fill(''); 
+    const cells = Array(totalCells).fill('');
 
     if (mines + diamonds > totalCells) {
         alert('Too many mines and diamonds!');
@@ -57,7 +57,7 @@ function generateBoard() {
         }
     }
 
-    // Fill remaining blank cells with diamonds
+    // Fill remaining blank cells with default diamonds
     for (let i = 0; i < totalCells; i++) {
         if (cells[i] === '') {
             cells[i] = 'defaultDiamond';
@@ -73,10 +73,12 @@ function generateBoard() {
     });
 
     const { multiplier, minIncreaseOnLoss, winningChance } = calculateResults(mines, diamonds);
+    const winAmount = betSize * multiplier;
     const results = `
-<strong>Multiplier is:</strong> ${multiplier.toFixed(2)}x<br>
-<strong>Min. Increase on Loss is:</strong> ${minIncreaseOnLoss.toFixed(2)}%<br>
-<strong>Winning Chance is:</strong> ${winningChance.toFixed(2)}%
+<strong>Multiplier is:</strong> ${multiplier.toFixed(15)}x<br>
+<strong>Min. Increase on Loss is:</strong> ${minIncreaseOnLoss.toFixed(15)}%<br>
+<strong>Winning Chance is:</strong> ${winningChance.toFixed(15)}%<br>
+<strong>Win Amount:</strong> $${winAmount.toFixed(2)}
 `;
     document.getElementById('results').innerHTML = results;
 }
