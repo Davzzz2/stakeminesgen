@@ -1,9 +1,8 @@
 body {
     font-family: Arial, sans-serif;
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
+    align-items: center;
     height: 100vh;
     background-color: black;
     color: #ecf0f1;
@@ -19,16 +18,17 @@ body {
     display: flex;
     justify-content: space-around;
     width: 80%;
-    margin: 20px auto;
+    margin: 20px 0;
 }
 
 .header-links a {
-    padding: 10px 20px;
+    padding: 15px 25px;
     border: 2px solid white;
-    border-radius: 3px;
+    border-radius: 10px;
     background-color: black;
     color: white;
     text-decoration: none;
+    font-size: 1.1em;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -107,9 +107,9 @@ input[type="number"] {
 }
 
 button {
-    padding: 5px 10px;
+    padding: 10px 20px;
     border: 2px solid white;
-    border-radius: 3px;
+    border-radius: 10px;
     background-color: black;
     color: white;
     cursor: pointer;
