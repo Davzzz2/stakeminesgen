@@ -66,7 +66,7 @@ function generateBoard() {
 
     const board = document.getElementById('board');
     board.innerHTML = '';
-    board.classList.remove('blank-board');  // Remove the blank-board class
+    board.style.display = 'grid'; // Show the board
     cells.forEach(cell => {
         const cellDiv = document.createElement('div');
         cellDiv.className = 'cell ' + cell;
