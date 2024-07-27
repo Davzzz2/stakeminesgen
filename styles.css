@@ -49,23 +49,10 @@ body {
 }
 
 #board {
-    display: grid;
+    display: none;
     grid-template-columns: repeat(5, 50px);
     grid-gap: 5px;
     margin-top: 20px;
-}
-
-.blank-board {
-    display: grid;
-    grid-template-columns: repeat(5, 50px);
-    grid-gap: 5px;
-    margin-top: 20px;
-    background-image: url('stakelogo.png'); /* Add your image path here */
-    background-size: cover; /* Adjust as necessary */
-    width: 192px;
-    height: 163px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .cell {
