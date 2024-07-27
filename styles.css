@@ -62,8 +62,8 @@ body {
     margin-top: 20px;
     background-image: url('stakelogo.png'); /* Add your image path here */
     background-size: cover; /* Adjust as necessary */
-    width: 255px;
-    height: 255px;
+    width: 192px;
+    height: 163px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
