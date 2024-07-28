@@ -88,12 +88,12 @@ function doubleBet() {
     const betInput = document.getElementById('betSize');
     let currentBet = parseFloat(betInput.value);
     currentBet = currentBet * 2;
-    betInput.value = currentBet.toFixed(4);
+    betInput.value = currentBet < 1 ? currentBet.toFixed(4) : currentBet.toFixed(2);
 }
 
 function halveBet() {
     const betInput = document.getElementById('betSize');
     let currentBet = parseFloat(betInput.value);
     currentBet = currentBet / 2;
-    betInput.value = currentBet.toFixed(4);
+    betInput.value = currentBet < 1 ? currentBet.toFixed(4) : currentBet.toFixed(2);
 }
