@@ -53,6 +53,7 @@ body {
     grid-template-columns: repeat(5, 50px);
     grid-gap: 5px;
     margin-top: 20px;
+    justify-content: center; /* Centering the mines board */
 }
 
 .cell {
