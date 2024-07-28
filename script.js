@@ -78,8 +78,8 @@ function generateMinesBoard() {
     const results = `
 <strong>Multiplier is:</strong> ${multiplier.toFixed(1)}x<br>
 <strong>Win Amount is:</strong> $${winAmount.toFixed(2)}<br>
-<strong>Min. Increase on Loss is:</strong> ${minIncreaseOnLoss.toFixed(5)}%<br>
-<strong>Winning Chance is:</strong> ${winningChance.toFixed(5)}%
+<strong>Winning Chance:</strong> ${winningChance.toFixed(3)}%<br>
+<strong>Minimal increase on loss:</strong> x${minIncreaseOnLoss.toFixed(3)}
 `;
     document.getElementById('minesResults').innerHTML = results;
 }
@@ -88,12 +88,12 @@ function doubleBet() {
     const betInput = document.getElementById('betSize');
     let currentBet = parseFloat(betInput.value);
     currentBet = currentBet * 2;
-    betInput.value = currentBet.toFixed(2);
+    betInput.value = currentBet.toFixed(4);
 }
 
 function halveBet() {
     const betInput = document.getElementById('betSize');
     let currentBet = parseFloat(betInput.value);
     currentBet = currentBet / 2;
-    betInput.value = currentBet.toFixed(2);
+    betInput.value = currentBet.toFixed(4);
 }
