@@ -19,17 +19,17 @@
         <div class="wrapper">
             <div>
                 <form id="minesForm">
-                    <label for="mines">Number of Mines:</label>
-                    <input type="number" id="mines" name="mines" min="1" max="24" required>
-                    <label for="diamonds">Number of Diamonds:</label>
-                    <input type="number" id="diamonds" name="diamonds" min="1" max="25" required>
-                    <label for="betSize">Bet Size:</label>
-                    <div class="bet-controls">
+                    <div class="form-group">
+                        <label for="mines">Number of Mines:</label>
+                        <input type="number" id="mines" name="mines" min="1" max="24" required>
+                        <label for="diamonds">Number of Diamonds:</label>
+                        <input type="number" id="diamonds" name="diamonds" min="1" max="25" required>
+                        <label for="betSize">Bet Size:</label>
                         <input type="number" id="betSize" name="betSize" step="0.0001" min="0.0001" required>
                         <button type="button" onclick="doubleBet()">2x</button>
                         <button type="button" onclick="halveBet()">1/2</button>
+                        <button type="button" onclick="generateMinesBoard()">Generate Mines Board</button>
                     </div>
-                    <button type="button" onclick="generateMinesBoard()">Generate Mines Board</button>
                 </form>
                 <div id="minesBoard"></div>
                 <div id="minesResults"></div>
