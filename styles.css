@@ -48,8 +48,8 @@ body {
     align-items: center;
 }
 
-#board {
-    display: none;
+#minesBoard {
+    display: grid;
     grid-template-columns: repeat(5, 50px);
     grid-gap: 5px;
     margin-top: 20px;
@@ -93,12 +93,7 @@ body {
     margin-bottom: 20px;
 }
 
-#multiplier {
-    margin-top: 10px;
-    font-size: 1.2em;
-}
-
-#results {
+#multiplier, #minesResults {
     margin-top: 10px;
     font-size: 1.2em;
 }
@@ -108,7 +103,7 @@ input[type="number"] {
     padding: 5px;
     border: 1px solid #bdc3c7;
     border-radius: 3px;
-    width: 50px;
+    width: 100px;
 }
 
 button {
@@ -134,4 +129,13 @@ button:hover {
     background-color: black;
     color: white;
     margin-bottom: 20px;
+}
+
+.bet-controls {
+    display: flex;
+    align-items: center;
+}
+
+.bet-controls button {
+    margin: 0 5px;
 }
