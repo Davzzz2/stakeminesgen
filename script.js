@@ -27,7 +27,7 @@ function calculateResults(mines, diamonds) {
     };
 }
 
-function generateBoard() {
+function generateMinesBoard() {
     const mines = parseInt(document.getElementById('mines').value);
     const diamonds = parseInt(document.getElementById('diamonds').value);
     const betSize = parseFloat(document.getElementById('betSize').value);
@@ -64,7 +64,7 @@ function generateBoard() {
         }
     }
 
-    const board = document.getElementById('board');
+    const board = document.getElementById('minesBoard');
     board.innerHTML = '';
     board.style.display = 'grid'; // Show the board
     cells.forEach(cell => {
@@ -81,5 +81,19 @@ function generateBoard() {
 <strong>Min. Increase on Loss is:</strong> ${minIncreaseOnLoss.toFixed(5)}%<br>
 <strong>Winning Chance is:</strong> ${winningChance.toFixed(5)}%
 `;
-    document.getElementById('results').innerHTML = results;
+    document.getElementById('minesResults').innerHTML = results;
+}
+
+function doubleBet() {
+    const betInput = document.getElementById('betSize');
+    let currentBet = parseFloat(betInput.value);
+    currentBet = currentBet * 2;
+    betInput.value = currentBet.toFixed(2);
+}
+
+function halveBet() {
+    const betInput = document.getElementById('betSize');
+    let currentBet = parseFloat(betInput.value);
+    currentBet = currentBet / 2;
+    betInput.value = currentBet.toFixed(2);
 }
