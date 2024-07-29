@@ -34,7 +34,7 @@ function generateMinesBoard() {
 
     if (!mines || !diamonds) {
         const results = `
-CHOOSE AMOUNT OF MINES AND DIAMONDS RETARD
+pick a fucking set up
 `;
         document.getElementById('minesResults').innerHTML = results;
         return;
