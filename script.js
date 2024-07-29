@@ -34,7 +34,7 @@ function generateMinesBoard() {
 
     if (!mines || !diamonds) {
         const results = `
-<strong>Multiplier is:</strong> CHOOSE AMOUNT OF MINES AND DIAMONDS IDIOT
+CHOOSE AMOUNT OF MINES AND DIAMONDS FUCKING RETARD
 `;
         document.getElementById('minesResults').innerHTML = results;
         return;
@@ -91,16 +91,18 @@ function generateMinesBoard() {
     document.getElementById('minesResults').innerHTML = results;
 }
 
-function doubleBet() {
-    const betInput = document.getElementById('betSize');
-    let currentBet = parseFloat(betInput.value);
-    currentBet = currentBet * 2;
-    betInput.value = currentBet < 1 ? currentBet.toFixed(4) : currentBet.toFixed(2);
-}
-
 function halveBet() {
     const betInput = document.getElementById('betSize');
     let currentBet = parseFloat(betInput.value);
     currentBet = currentBet / 2;
+    betInput.value = currentBet < 1 ? currentBet.toFixed(4) : currentBet.toFixed(2);
+}
+
+}
+
+function doubleBet() {
+    const betInput = document.getElementById('betSize');
+    let currentBet = parseFloat(betInput.value);
+    currentBet = currentBet * 2;
     betInput.value = currentBet < 1 ? currentBet.toFixed(4) : currentBet.toFixed(2);
 }
