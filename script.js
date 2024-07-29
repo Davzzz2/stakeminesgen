@@ -39,22 +39,20 @@ function generateMinesBoard() {
         return;
     }
 
-    // Place mines randomly on the board
+    // Create an array of indices representing the cell positions
+    let indices = Array.from({ length: totalCells }, (v, i) => i);
+
+    // Shuffle the indices array to randomize positions
+    indices = indices.sort(() => Math.random() - 0.5);
+
+    // Place mines in the first 'mines' number of indices
     for (let i = 0; i < mines; i++) {
-        let randomIndex;
-        do {
-            randomIndex = Math.floor(Math.random() * totalCells);
-        } while (cells[randomIndex] === 'mine');
-        cells[randomIndex] = 'mine';
+        cells[indices[i]] = 'mine';
     }
 
-    // Place specified diamonds on the board
-    let diamondsPlaced = 0;
-    for (let i = 0; i < totalCells && diamondsPlaced < diamonds; i++) {
-        if (cells[i] === '') {
-            cells[i] = 'diamond';
-            diamondsPlaced++;
-        }
+    // Place diamonds in the next 'diamonds' number of indices
+    for (let i = mines; i < mines + diamonds; i++) {
+        cells[indices[i]] = 'diamond';
     }
 
     // Fill remaining blank cells with default diamonds
