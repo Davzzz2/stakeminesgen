@@ -31,6 +31,15 @@ function generateMinesBoard() {
     const mines = parseInt(document.getElementById('mines').value);
     const diamonds = parseInt(document.getElementById('diamonds').value);
     const betSize = parseFloat(document.getElementById('betSize').value);
+
+    if (!mines || !diamonds) {
+        const results = `
+<strong>Multiplier is:</strong> CHOOSE AMOUNT OF MINES AND DIAMONDS IDIOT
+`;
+        document.getElementById('minesResults').innerHTML = results;
+        return;
+    }
+
     const totalCells = 25;
     const cells = Array(totalCells).fill('');
 
