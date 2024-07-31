@@ -34,7 +34,7 @@ function generateMinesBoard() {
 
     if (!mines || !diamonds) {
         const results = `
-pick a fucking set up
+CHOOSE AMOUNT OF MINES AND DIAMONDS IDIOT
 `;
         document.getElementById('minesResults').innerHTML = results;
         return;
@@ -83,7 +83,7 @@ pick a fucking set up
     const { multiplier, minIncreaseOnLoss, winningChance } = calculateResults(mines, diamonds);
     const winAmount = betSize * multiplier;
     const results = `
-<strong>Multiplier is:</strong> ${multiplier.toFixed(1)}x<br>
+<strong>${multiplier.toFixed(1)}x<br>
 <strong>Win Amount is:</strong> $${winAmount.toFixed(2)}<br>
 <strong>Winning Chance:</strong> ${winningChance.toFixed(3)}%<br>
 <strong>Minimal increase on loss:</strong> x${minIncreaseOnLoss.toFixed(3)}
@@ -103,4 +103,24 @@ function halveBet() {
     let currentBet = parseFloat(betInput.value);
     currentBet = currentBet / 2;
     betInput.value = currentBet < 1 ? currentBet.toFixed(4) : currentBet.toFixed(2);
+}
+
+function randomizeMinesAndDiamonds() {
+    const minMines = parseInt(document.getElementById('minMines').value);
+    const maxMines = parseInt(document.getElementById('maxMines').value);
+    const minDiamonds = parseInt(document.getElementById('minDiamonds').value);
+    const maxDiamonds = parseInt(document.getElementById('maxDiamonds').value);
+
+    if (minMines > maxMines || minDiamonds > maxDiamonds) {
+        alert('Invalid range values!');
+        return;
+    }
+
+    const mines = Math.floor(Math.random() * (maxMines - minMines + 1)) + minMines;
+    const diamonds = Math.floor(Math.random() * (maxDiamonds - minDiamonds + 1)) + minDiamonds;
+
+    document.getElementById('mines').value = mines;
+    document.getElementById('diamonds').value = diamonds;
+
+    generateMinesBoard();
 }
