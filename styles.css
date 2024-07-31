@@ -137,6 +137,7 @@ button:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 20px; /* Added margin for spacing */
 }
 
 .bet-controls {
@@ -147,4 +148,41 @@ button:hover {
 
 .bet-controls button {
     margin: 0 5px;
+}
+
+/* New styles for randomize range inputs */
+.randomize-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 20px; /* Added margin for spacing */
+}
+
+.randomize-group label {
+    margin: 5px;
+}
+
+.randomize-group input {
+    margin: 5px;
+    padding: 5px;
+    border: 1px solid #bdc3c7;
+    border-radius: 3px;
+    width: 80px; /* Adjusted width */
+}
+
+.randomize-group button {
+    margin: 10px 0;
+    padding: 10px 20px;
+    border: 2px solid white;
+    border-radius: 10px;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.randomize-group button:hover {
+    background-color: white;
+    color: black;
 }
