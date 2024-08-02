@@ -29,19 +29,20 @@
                         <button type="button" onclick="doubleBet()">2x</button>
                         <button type="button" onclick="halveBet()">1/2</button>
                         <button type="button" onclick="generateMinesBoard()">Generate Mines Board</button>
-                        <button type="button" onclick="randomizeMinesAndDiamonds()">Randomize</button>
                     </div>
-                    <div class="form-group">
+                    <div class="randomize-group">
                         <label for="minMines">Min Mines:</label>
-                        <input type="number" id="minMines" name="minMines" min="0" max="24" value="0">
+                        <input type="number" id="minMines" name="minMines" min="1" max="24">
                         <label for="maxMines">Max Mines:</label>
-                        <input type="number" id="maxMines" name="maxMines" min="0" max="24" value="24">
+                        <input type="number" id="maxMines" name="maxMines" min="1" max="24">
                         <label for="minDiamonds">Min Diamonds:</label>
-                        <input type="number" id="minDiamonds" name="minDiamonds" min="0" max="24" value="0">
+                        <input type="number" id="minDiamonds" name="minDiamonds" min="1" max="25">
                         <label for="maxDiamonds">Max Diamonds:</label>
-                        <input type="number" id="maxDiamonds" name="maxDiamonds" min="0" max="24" value="24">
+                        <input type="number" id="maxDiamonds" name="maxDiamonds" min="1" max="25">
+                        <button type="button" onclick="randomizeMinesAndDiamonds()">Randomize Mines & Diamonds</button>
                     </div>
                 </form>
+                <button type="button" onclick="generateAlphabetBoard()">Generate Alphabet Board</button>
                 <div id="minesBoard"></div>
                 <div id="minesResults"></div>
             </div>
