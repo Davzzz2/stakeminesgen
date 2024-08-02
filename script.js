@@ -1,126 +1,89 @@
-function factorial(number) {
-    let value = 1;
-    for (let i = number; i > 1; i--) {
-        value *= i;
-    }
-    return value;
-}
+document.addEventListener("DOMContentLoaded", function() {
+    // Generate Mines Board
+    window.generateMinesBoard = function() {
+        const minesBoard = document.getElementById('minesBoard');
+        const mines = parseInt(document.getElementById('mines').value);
+        const diamonds = parseInt(document.getElementById('diamonds').value);
+        const results = document.getElementById('minesResults');
+        minesBoard.innerHTML = '';
+        results.innerHTML = '';
 
-function combination(n, d) {
-    if (n == d) return 1;
-    return factorial(n) / (factorial(d) * factorial(n - d));
-}
-
-function calculateResults(mines, diamonds) {
-    const totalCells = 25;
-    const safeCells = totalCells - mines;
-    const first = combination(totalCells, diamonds);
-    const second = combination(safeCells, diamonds);
-    const result = 0.99 * (first / second);
-    const minIncreaseOnLoss = (100 / (result - 1));
-    const winningChance = (99 / result);
-
-    return {
-        multiplier: result,
-        minIncreaseOnLoss: minIncreaseOnLoss,
-        winningChance: winningChance
-    };
-}
-
-function generateMinesBoard() {
-    const mines = parseInt(document.getElementById('mines').value);
-    const diamonds = parseInt(document.getElementById('diamonds').value);
-    const betSize = parseFloat(document.getElementById('betSize').value);
-
-    if (!mines || !diamonds) {
-        const results = `
-CHOOSE AMOUNT OF MINES AND DIAMONDS IDIOT
-`;
-        document.getElementById('minesResults').innerHTML = results;
-        return;
-    }
-
-    const totalCells = 25;
-    const cells = Array(totalCells).fill('');
-
-    if (mines + diamonds > totalCells) {
-        alert('Too many mines and diamonds!');
-        return;
-    }
-
-    // Create an array of indices representing the cell positions
-    let indices = Array.from({ length: totalCells }, (v, i) => i);
-
-    // Shuffle the indices array to randomize positions
-    indices = indices.sort(() => Math.random() - 0.5);
-
-    // Place mines in the first 'mines' number of indices
-    for (let i = 0; i < mines; i++) {
-        cells[indices[i]] = 'mine';
-    }
-
-    // Place diamonds in the next 'diamonds' number of indices
-    for (let i = mines; i < mines + diamonds; i++) {
-        cells[indices[i]] = 'diamond';
-    }
-
-    // Fill remaining blank cells with default diamonds
-    for (let i = 0; i < totalCells; i++) {
-        if (cells[i] === '') {
-            cells[i] = 'defaultDiamond';
+        if (isNaN(mines) || isNaN(diamonds)) {
+            results.textContent = "CHOOSE AMOUNT OF MINES AND DIAMONDS IDIOT";
+            return;
         }
-    }
 
-    const board = document.getElementById('minesBoard');
-    board.innerHTML = '';
-    board.style.display = 'grid'; // Show the board
-    cells.forEach(cell => {
-        const cellDiv = document.createElement('div');
-        cellDiv.className = 'cell ' + cell;
-        board.appendChild(cellDiv);
-    });
+        const board = Array(25).fill('defaultDiamond');
+        for (let i = 0; i < mines; i++) {
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * 25);
+            } while (board[randomIndex] === 'mine');
+            board[randomIndex] = 'mine';
+        }
 
-    const { multiplier, minIncreaseOnLoss, winningChance } = calculateResults(mines, diamonds);
-    const winAmount = betSize * multiplier;
-    const results = `
-<strong>${multiplier.toFixed(1)}x<br>
-<strong>Win Amount is:</strong> $${winAmount.toFixed(2)}<br>
-<strong>Winning Chance:</strong> ${winningChance.toFixed(3)}%<br>
-<strong>Minimal increase on loss:</strong> x${minIncreaseOnLoss.toFixed(3)}
-`;
-    document.getElementById('minesResults').innerHTML = results;
-}
+        for (let i = 0; i < diamonds; i++) {
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * 25);
+            } while (board[randomIndex] === 'mine' || board[randomIndex] === 'diamond');
+            board[randomIndex] = 'diamond';
+        }
 
-function doubleBet() {
-    const betInput = document.getElementById('betSize');
-    let currentBet = parseFloat(betInput.value);
-    currentBet = currentBet * 2;
-    betInput.value = currentBet < 1 ? currentBet.toFixed(4) : currentBet.toFixed(2);
-}
+        board.forEach(cell => {
+            const cellElement = document.createElement('div');
+            cellElement.classList.add('cell', cell);
+            minesBoard.appendChild(cellElement);
+        });
+    };
 
-function halveBet() {
-    const betInput = document.getElementById('betSize');
-    let currentBet = parseFloat(betInput.value);
-    currentBet = currentBet / 2;
-    betInput.value = currentBet < 1 ? currentBet.toFixed(4) : currentBet.toFixed(2);
-}
+    // Randomize Mines and Diamonds
+    window.randomizeMinesAndDiamonds = function() {
+        const minMines = parseInt(document.getElementById('minMines').value);
+        const maxMines = parseInt(document.getElementById('maxMines').value);
+        const minDiamonds = parseInt(document.getElementById('minDiamonds').value);
+        const maxDiamonds = parseInt(document.getElementById('maxDiamonds').value);
 
-function randomizeMinesAndDiamonds() {
-    const minMines = parseInt(document.getElementById('minMines').value);
-    const maxMines = parseInt(document.getElementById('maxMines').value);
-    const minDiamonds = parseInt(document.getElementById('minDiamonds').value);
-    const maxDiamonds = parseInt(document.getElementById('maxDiamonds').value);
+        const randomMines = Math.floor(Math.random() * (maxMines - minMines + 1)) + minMines;
+        const randomDiamonds = Math.floor(Math.random() * (maxDiamonds - minDiamonds + 1)) + minDiamonds;
 
-    if (minMines > maxMines || minDiamonds > maxDiamonds) {
-        alert('Invalid range values!');
-        return;
-    }
+        document.getElementById('mines').value = randomMines;
+        document.getElementById('diamonds').value = randomDiamonds;
+    };
 
-    const mines = Math.floor(Math.random() * (maxMines - minMines + 1)) + minMines;
-    const diamonds = Math.floor(Math.random() * (maxDiamonds - minDiamonds + 1)) + minDiamonds;
+    // Generate Alphabet Board with Multipliers
+    window.generateAlphabetBoard = function() {
+        const minesBoard = document.getElementById('minesBoard');
+        const results = document.getElementById('minesResults');
+        minesBoard.innerHTML = '';
+        results.innerHTML = '';
 
-    document.getElementById('mines').value = mines;
-    document.getElementById('diamonds').value = diamonds;
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const board = [];
 
-    generateMinesBoard();
-}
+        for (let i = 0; i < 25; i++) {
+            const randomLetter = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+            const randomMultiplier = (Math.random() * (5 - 1) + 1).toFixed(2); // Random multiplier between 1 and 5
+            board.push({ letter: randomLetter, multiplier: randomMultiplier });
+        }
+
+        board.forEach(cell => {
+            const cellElement = document.createElement('div');
+            cellElement.classList.add('cell');
+            cellElement.textContent = `${cell.letter} (${cell.multiplier}x)`;
+            minesBoard.appendChild(cellElement);
+        });
+    };
+
+    // Double Bet Size
+    window.doubleBet = function() {
+        const betSizeInput = document.getElementById('betSize');
+        betSizeInput.value = (parseFloat(betSizeInput.value) * 2).toFixed(4);
+    };
+
+    // Halve Bet Size
+    window.halveBet = function() {
+        const betSizeInput = document.getElementById('betSize');
+        betSizeInput.value = (parseFloat(betSizeInput.value) / 2).toFixed(4);
+    };
+});
