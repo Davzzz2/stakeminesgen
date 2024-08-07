@@ -124,3 +124,25 @@ function randomizeMinesAndDiamonds() {
 
     generateMinesBoard();
 }
+
+// Add this function to your existing JavaScript file (script.js)
+
+function toggleRandomizationFields() {
+    const randomizationFields = document.getElementById('randomizationFields');
+    const randomizeButton = document.getElementById('randomizeButton');
+    const isChecked = document.getElementById('toggleRandomization').checked;
+    if (isChecked) {
+        randomizationFields.style.display = 'flex';
+        randomizeButton.disabled = false;
+    } else {
+        randomizationFields.style.display = 'none';
+        randomizeButton.disabled = true;
+    }
+}
+
+// Ensure randomization fields are hidden and button is disabled by default
+document.addEventListener('DOMContentLoaded', (event) => {
+    document.getElementById('randomizationFields').style.display = 'none';
+    document.getElementById('randomizeButton').disabled = true;
+});
+
