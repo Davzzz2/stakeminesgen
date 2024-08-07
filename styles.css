@@ -39,7 +39,7 @@ body {
 .announcement {
     margin-top: 80px;
     padding: 20px 0;
-    font-size: 1.5em; /* Increased font size */
+    font-size: 2em; /* Increased font size */
     font-weight: bold; /* Made text bolder */
     color: #ecf0f1;
     text-align: center;
@@ -196,4 +196,15 @@ button:hover {
 .randomize-group button:hover {
     background-color: white;
     color: black;
+}
+
+.footer {
+    margin-top: auto;
+    padding: 20px 0;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ecf0f1;
+    text-align: center;
+    width: 100%;
+    background-color: black;
 }
