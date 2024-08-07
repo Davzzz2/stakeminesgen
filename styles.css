@@ -36,10 +36,21 @@ body {
     color: black;
 }
 
+.announcement {
+    margin-top: 80px;
+    padding: 20px 0;
+    font-size: 1.5em; /* Increased font size */
+    font-weight: bold; /* Made text bolder */
+    color: #ecf0f1;
+    text-align: center;
+    width: 100%;
+    background-color: black;
+}
+
 .container {
     text-align: center;
     width: 100%;
-    margin-top: 80px; /* Adjust to ensure content is not hidden behind fixed header */
+    margin-top: 20px; /* Adjusted to create space for announcement */
 }
 
 .wrapper {
