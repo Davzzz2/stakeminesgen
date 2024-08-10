@@ -146,3 +146,31 @@ document.addEventListener('DOMContentLoaded', (event) => {
     document.getElementById('randomizeButton').disabled = true;
 });
 
+// Existing functions...
+
+// Add this function to your existing JavaScript file (script.js)
+
+async function checkIfLive() {
+    try {
+        const response = await fetch('https://kick.com/api/v1/channels/katerena'); // Adjust the API endpoint as necessary.
+        const data = await response.json();
+
+        const isLive = data.livestream?.is_live; // Adjust based on the actual API response structure.
+
+        const dot = document.getElementById('live-status-dot');
+
+        if (isLive) {
+            dot.style.backgroundColor = 'green';
+        } else {
+            dot.style.backgroundColor = 'red';
+        }
+    } catch (error) {
+        console.error('Error fetching live status:', error);
+    }
+}
+
+// Check the live status when the page loads.
+window.onload = checkIfLive;
+
+// Optionally, refresh the status every minute:
+setInterval(checkIfLive, 60000);
