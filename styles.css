@@ -297,3 +297,48 @@ input:checked + .slider:before {
     font-size: 1em;
 }
 
+/* Existing styles... */
+
+.header-links {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    padding: 20px 0;
+    background-color: black;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.header-links a {
+    padding: 15px 25px;
+    padding-right: 40px; /* Add more padding to the right to create space for the dot */
+    border: 2px solid white;
+    border-radius: 10px;
+    background-color: black;
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    position: relative; /* Ensure the dot can be positioned within */
+}
+
+.header-links a:hover {
+    background-color: white;
+    color: black;
+}
+
+#live-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: grey;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    right: 10px; /* Keep the dot aligned to the right */
+    transform: translateY(-50%);
+}
+
+/* Other existing styles... */
