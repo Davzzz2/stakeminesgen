@@ -146,31 +146,29 @@ document.addEventListener('DOMContentLoaded', (event) => {
     document.getElementById('randomizeButton').disabled = true;
 });
 
-// Existing functions...
-
-// Add this function to your existing JavaScript file (script.js)
-
 async function checkIfLive() {
     try {
-        const response = await fetch('https://kick.com/api/v2/channels/enjayy'); // Adjust the API endpoint as necessary.
+        const response = await fetch('https://kick.com/api/v1/channels/enjayy'); // Adjusted for the correct channel
         const data = await response.json();
 
-        const isLive = data.livestream?.is_live; // Adjust based on the actual API response structure.
-
-        const dot = document.getElementById('live-status-dot');
+        const isLive = data.livestream && data.livestream.is_live;
+        const statusText = document.getElementById('live-status-text');
 
         if (isLive) {
-            dot.style.backgroundColor = 'green';
+            statusText.style.color = 'green';
         } else {
-            dot.style.backgroundColor = 'red';
+            statusText.style.color = 'red';
         }
     } catch (error) {
         console.error('Error fetching live status:', error);
+        const statusText = document.getElementById('live-status-text');
+        statusText.style.color = 'grey'; // Grey if there’s an error
     }
 }
 
 // Check the live status when the page loads.
 window.onload = checkIfLive;
 
-// Optionally, refresh the status every minute:
+// Refresh the status every minute:
 setInterval(checkIfLive, 60000);
+
