@@ -108,7 +108,10 @@ function halveBet() {
 function randomizeMinesAndDiamonds() {
     const totalCells = 25;
 
-    let mines = Math.floor(Math.random() * totalCells) + 1;
+    // Randomly pick a number for mines between 1 and 24
+    let mines = Math.floor(Math.random() * 24) + 1;
+
+    // Randomly pick a number for diamonds between 1 and (25 - mines)
     let diamonds = Math.floor(Math.random() * (totalCells - mines)) + 1;
 
     document.getElementById('mines').value = mines;
