@@ -156,38 +156,3 @@ button:disabled {
 #generatePatternButton {
     margin-top: 10px; /* Adjust this value to move the button down */
 }
-
-        /* Hide default cursor */
-        body, html {
-            cursor: none;
-        }
-
-        /* Style for the glowing circle cursor */
-        .cursor {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        /* Style for the trail effect */
-        .trail {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 999;
-            animation: fadeOut 0.5s forwards;
-        }
-
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-        }
