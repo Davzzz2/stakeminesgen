@@ -44,15 +44,17 @@ body {
     color: #ecf0f1;
     text-align: center;
     width: 100%;
-    background-color: black;
+    background-color: black; 
 }
 
 .container {
     text-align: center;
     width: 100%;
     margin-top: 20px;
+text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 
+               0 0 20px rgba(255, 255, 255, 0.3),
+               0 0 30px rgba(255, 255, 255, 0.2); /* White glow effect */  
 }
-
 .wrapper {
     display: flex;
     flex-direction: column;
@@ -155,4 +157,17 @@ button:disabled {
 
 #generatePatternButton {
     margin-top: 10px; /* Adjust this value to move the button down */
+}
+
+.site-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: white; /* Plain white text */
+  font-size: 16px; /* Text size */
+  background: none; /* Remove any background color */
+  padding: 10px 0; /* Minimal padding for spacing */
+  margin: 0;
 }
