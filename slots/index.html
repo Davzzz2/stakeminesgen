@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Slot Assistant</title>
+  <style>
+    /* Global Styles with Black-to-Grey Gradient */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      background: linear-gradient(135deg, #000, #555);
+      color: #f0f0f0;
+    }
+    /* Back Button Styles */
+#backButton {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: transparent;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#backButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+    h1 {
+      margin-top: 20px;
+      font-size: 2.5em;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+    /* Dropdown Styles */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+      margin: 15px 0;
+    }
+    .dropbtn {
+      background: #222;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background: #fff;
+      min-width: 200px;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+      z-index: 1;
+      border-radius: 5px;
+      padding: 10px;
+      text-align: left;
+    }
+    .dropdown-content label {
+      display: block;
+      color: #333;
+      font-size: 16px;
+      margin: 5px 0;
+      cursor: pointer;
+    }
+    .dropdown-content input[type="checkbox"] {
+      margin-right: 5px;
+      transform: scale(1.2);
+      vertical-align: middle;
+    }
+    /* Button Styling */
+    button {
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    #randomButton {
+      background: #222;
+      color: #fff;
+      margin: 15px;
+    }
+    #randomButton:hover {
+      background: #444;
+      transform: translateY(-2px);
+    }
+    /* Modal Buttons Styling */
+    .modal-content .play-btn {
+      background: #ccc;
+      color: #333;
+    }
+    .modal-content .play-btn:hover {
+      background: #bbb;
+      transform: translateY(-2px);
+    }
+    .modal-content .cancel-btn {
+      background: #ccc;
+      color: #333;
+    }
+    .modal-content .cancel-btn:hover {
+      background: #bbb;
+      transform: translateY(-2px);
+    }
+    /* Generate Random Task Button Styling */
+    .modal-content .task-btn {
+      background: #ccc;
+      color: #333;
+      margin: 15px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+      display: block;
+    }
+    .modal-content .task-btn:hover {
+      background: #bbb;
+      transform: translateY(-2px);
+    }
+    /* Style for Task Display */
+    #taskDisplay {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    /* Slider Container with Grey Background */
+    #sliderContainer {
+      position: relative;
+      width: 100vw;
+      height: 350px;
+      overflow: hidden;
+      margin: 20px auto;
+      background: #666;
+      border: 1px solid #ddd;
+    }
+    /* Center Selection Line */
+    #centerLine {
+      position: absolute;
+      width: 4px;
+      height: 100%;
+      background: #222;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 0;
+      z-index: 2;
+    }
+    /* Slider */
+    #slider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      margin: 0;
+      white-space: nowrap;
+      transform: translateX(0);
+    }
+    /* Individual Slot */
+    .slot {
+      width: 250px;
+      flex-shrink: 0;
+      transition: transform 0.3s ease-in-out;
+      cursor: pointer;
+      border: 1px solid #666;
+      border-radius: 5px;
+      background: #444;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .slot img {
+      width: 100%;
+      height: 100%;
+      border-radius: 5px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      image-rendering: auto;
+    }
+    .slot:hover img {
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    /* Highlighted Slot */
+    .highlight {
+      transform: scale(1.1);
+      border-color: #222;
+    }
+    /* Modal Popout */
+    #modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    #modal.show {
+      opacity: 1;
+    }
+    /* Modal Content with Increased Horizontal Size */
+    .modal-content {
+      background: #222;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      color: #f0f0f0;
+      width: 600px;
+      max-width: 90%;
+      border: 2px solid #fff;
+      box-shadow: 0 0 20px rgba(255,255,255,0.3);
+      transform: scale(0.9);
+      transition: transform 0.3s ease-in-out;
+    }
+    #modal.show .modal-content {
+      transform: scale(1);
+    }
+    .modal-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    /* Domain Selector */
+    .modal-content select {
+      margin: 10px 0;
+      padding: 5px 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #fff;
+      background: #444;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <!-- Back Button -->
+  <button id="backButton" onclick="window.location.href='../index.html'">&lt;</button>
+  
+  <h1>Slot Assistant</h1>
+  
+  <!-- Dropdown with Provider Checkboxes -->
+  <div class="dropdown">
+    <button class="dropbtn" id="providerDropdownBtn">Select Providers</button>
+    <div class="dropdown-content" id="providerDropdownContent">
+      <label><input type="checkbox" id="pragmaticCheckbox" checked> Pragmatic Play</label>
+      <label><input type="checkbox" id="hacksawCheckbox" checked> Hacksaw Gaming</label>
+      <label><input type="checkbox" id="nolimitCheckbox" checked> Nolimit City</label>
+      <label><input type="checkbox" id="massiveCheckbox" checked> Massive Studios</label>
+      <label><input type="checkbox" id="twistCheckbox" checked> Twist Gaming</label>
+      <label><input type="checkbox" id="pushCheckbox" checked> Push Gaming</label>
+      <label><input type="checkbox" id="relaxCheckbox" checked> Relax Gaming</label>
+      <label><input type="checkbox" id="playngoCheckbox" checked> Play'n Go</label>
+      <label><input type="checkbox" id="titanCheckbox" checked> Titan Gaming</label>
+      <label><input type="checkbox" id="avataruxCheckbox" checked> AvatarUX Studios</label>
+      <label><input type="checkbox" id="backseatCheckbox" checked> Backseat Gaming</label>
+      <label><input type="checkbox" id="octoplayCheckbox" checked> Octoplay</label>
+      <label><input type="checkbox" id="peterCheckbox" checked> Peter &amp; Sons</label>
+      <label><input type="checkbox" id="elkCheckbox" checked> ELK Studios</label>
+      <label><input type="checkbox" id="thunderCheckbox" checked> Thunderkick</label>
+      <label><input type="checkbox" id="popiCheckbox" checked> Popiplay</label>
+      <label><input type="checkbox" id="bgamingCheckbox" checked> BGaming</label>
+      <label><input type="checkbox" id="printCheckbox" checked> Print Studios</label>
+      <label><input type="checkbox" id="bullsharkCheckbox" checked> Bullshark Games</label>
+      <label><input type="checkbox" id="netentCheckbox" checked> Netent</label>
+    </div>
+  </div>
+  
+  <button id="randomButton">Pick Random Slot</button>
+  
+  <div id="sliderContainer">
+    <div id="centerLine"></div>
+    <div id="slider"></div>
+  </div>
+  
+  <!-- Modal Popout -->
+  <div id="modal">
+    <div class="modal-content">
+      <img id="modalSlotImage" src="" alt="Slot Image">
+      <h2 id="modalSlotName"></h2>
+      <select id="domainSelector">
+         <!-- Domain options will be added by JavaScript -->
+      </select>
+      <br>
+      <div class="modal-buttons">
+        <button class="play-btn" id="modalPlayButton">Play Now</button>
+        <button class="cancel-btn" id="modalCancelButton">Cancel</button>
+      </div>
+      <button class="task-btn" id="modalTaskButton">Generate Random Task</button>
+      <p id="taskDisplay"></p>
+    </div>
+  </div>
+  
+  <script>
+    // Arrays for each provider
+    let pragmaticSlots = [];
+    let hacksawSlots = [];
+    let nolimitSlots = [];
+    let massiveSlots = [];
+    let twistSlots = [];
+    let pushSlots = [];
+    let relaxSlots = [];
+    let playngoSlots = [];
+    let titanSlots = [];
+    let avataruxSlots = [];
+    let backseatSlots = [];
+    let octoplaySlots = [];
+    let peterSlots = [];
+    let elkSlots = [];
+    let thunderSlots = [];
+    let popiSlots = [];
+    let bgamingSlots = [];
+    let printSlots = [];
+    let bullsharkSlots = [];
+    let netentSlots = [];
+    let slots = []; // Combined array for display
+
+    let selectedSlot = null;
+    let currentTranslate = 0;
+    const speed = 2000; // pixels per second
+    let slotIdCounter = 0;
+
+    // Domain list (Stake.com is default)
+    const domains = [
+      "stake.com",
+      "stake.ac",
+      "stake.games",
+      "stake.bet",
+      "stake.pet",
+      "stake1001.com",
+      "stake1002.com",
+      "stake1003.com",
+      "stake1021.com",
+      "stake1022.com",
+      "stake.mba",
+      "stake.jp",
+      "stake.bz",
+      "staketr.com",
+      "stake.ceo",
+      "stake.krd"
+    ];
+
+    // Populate domain selector
+    const domainSelector = document.getElementById('domainSelector');
+    domains.forEach(domain => {
+      const option = document.createElement('option');
+      option.value = domain;
+      option.textContent = domain;
+      if (domain === "stake.com") option.selected = true;
+      domainSelector.appendChild(option);
+    });
+
+    // Toggle dropdown menu
+    document.getElementById("providerDropdownBtn").addEventListener("click", () => {
+      const content = document.getElementById("providerDropdownContent");
+      content.style.display = content.style.display === "block" ? "none" : "block";
+    });
+
+    // Always show "Select Providers"
+    function updateDropdownButtonText() {
+      document.getElementById("providerDropdownBtn").textContent = "Select Providers";
+    }
+    const checkboxIds = ["pragmaticCheckbox", "hacksawCheckbox", "nolimitCheckbox", "massiveCheckbox", "twistCheckbox", "pushCheckbox", "relaxCheckbox", "playngoCheckbox", "titanCheckbox", "avataruxCheckbox", "backseatCheckbox", "octoplayCheckbox", "peterCheckbox", "elkCheckbox", "thunderCheckbox", "popiCheckbox", "bgamingCheckbox", "printCheckbox", "bullsharkCheckbox", "netentCheckbox"];
+    checkboxIds.forEach(id => {
+      document.getElementById(id).addEventListener("change", () => {
+        updateDropdownButtonText();
+        loadSlots();
+      });
+    });
+    updateDropdownButtonText();
+
+    // Fisher-Yates shuffle
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    // Always loop all slots by duplicating them once extra.
+    function updateSliderDisplay() {
+      const slider = document.getElementById('slider');
+      slider.innerHTML = '';
+      slots.forEach(slot => slider.appendChild(slot));
+      // Duplicate slots once for looping effect.
+      slots.forEach(slot => {
+        let clone = slot.cloneNode(true);
+        slider.appendChild(clone);
+      });
+      currentTranslate = 0;
+      slider.style.transition = 'none';
+      slider.style.transform = `translateX(0px)`;
+    }
+
+    // Fetch slots for a given provider from its file.
+    function fetchSlots(url, provider) {
+      return fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          let lines = data.split(/\r?\n/).filter(line => line.trim() !== '');
+          let resultSlots = [];
+          lines.forEach(line => {
+            // Expected CSV format: "slotName","imageUrl","slotLink"
+            const parts = line.match(/"([^"]+)","([^"]+)","([^"]+)"/);
+            if (!parts) return;
+            const slotName = parts[1].trim();
+            const imageUrl = parts[2].trim();
+            const slotLink = parts[3].trim();
+            const div = document.createElement('div');
+            div.className = 'slot';
+            div.dataset.link = slotLink;
+            div.dataset.name = slotName;
+            div.dataset.provider = provider;
+            div.dataset.slotId = provider + '-' + slotIdCounter++;
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = slotName;
+            div.appendChild(img);
+            resultSlots.push(div);
+          });
+          return resultSlots;
+        });
+    }
+
+    // Load slots from all selected providers.
+    function loadSlots() {
+      const pragmaticChecked = document.getElementById('pragmaticCheckbox').checked;
+      const hacksawChecked = document.getElementById('hacksawCheckbox').checked;
+      const nolimitChecked = document.getElementById('nolimitCheckbox').checked;
+      const massiveChecked = document.getElementById('massiveCheckbox').checked;
+      const twistChecked = document.getElementById('twistCheckbox').checked;
+      const pushChecked = document.getElementById('pushCheckbox').checked;
+      const relaxChecked = document.getElementById('relaxCheckbox').checked;
+      const playngoChecked = document.getElementById('playngoCheckbox').checked;
+      const titanChecked = document.getElementById('titanCheckbox').checked;
+      const avataruxChecked = document.getElementById('avataruxCheckbox').checked;
+      const backseatChecked = document.getElementById('backseatCheckbox').checked;
+      const octoplayChecked = document.getElementById('octoplayCheckbox').checked;
+      const peterChecked = document.getElementById('peterCheckbox').checked;
+      const elkChecked = document.getElementById('elkCheckbox').checked;
+      const thunderChecked = document.getElementById('thunderCheckbox').checked;
+      const popiChecked = document.getElementById('popiCheckbox').checked;
+      const bgamingChecked = document.getElementById('bgamingCheckbox').checked;
+      const printChecked = document.getElementById('printCheckbox').checked;
+      const bullsharkChecked = document.getElementById('bullsharkCheckbox').checked;
+      const netentChecked = document.getElementById('netentCheckbox').checked;
+
+      // Reset all arrays
+      pragmaticSlots = [];
+      hacksawSlots = [];
+      nolimitSlots = [];
+      massiveSlots = [];
+      twistSlots = [];
+      pushSlots = [];
+      relaxSlots = [];
+      playngoSlots = [];
+      titanSlots = [];
+      avataruxSlots = [];
+      backseatSlots = [];
+      octoplaySlots = [];
+      peterSlots = [];
+      elkSlots = [];
+      thunderSlots = [];
+      popiSlots = [];
+      bgamingSlots = [];
+      printSlots = [];
+      bullsharkSlots = [];
+      netentSlots = [];
+      slots = [];
+      let promises = [];
+      if (pragmaticChecked) {
+        promises.push(fetchSlots('prags.txt', 'pragmatic').then(arr => { pragmaticSlots = arr; }));
+      }
+      if (hacksawChecked) {
+        promises.push(fetchSlots('hacksaws.txt', 'hacksaw').then(arr => { hacksawSlots = arr; }));
+      }
+      if (nolimitChecked) {
+        promises.push(fetchSlots('nolimit.txt', 'nolimit').then(arr => { nolimitSlots = arr; }));
+      }
+      if (massiveChecked) {
+        promises.push(fetchSlots('massive.txt', 'massive').then(arr => { massiveSlots = arr; }));
+      }
+      if (twistChecked) {
+        promises.push(fetchSlots('twist.txt', 'twist').then(arr => { twistSlots = arr; }));
+      }
+      if (pushChecked) {
+        promises.push(fetchSlots('push.txt', 'push').then(arr => { pushSlots = arr; }));
+      }
+      if (relaxChecked) {
+        promises.push(fetchSlots('Relax.txt', 'relax').then(arr => { relaxSlots = arr; }));
+      }
+      if (playngoChecked) {
+        promises.push(fetchSlots('playngo.txt', 'playngo').then(arr => { playngoSlots = arr; }));
+      }
+      if (titanChecked) {
+        promises.push(fetchSlots('titan.txt', 'titan').then(arr => { titanSlots = arr; }));
+      }
+      if (avataruxChecked) {
+        promises.push(fetchSlots('AvatarUX.txt', 'avatarux').then(arr => { avataruxSlots = arr; }));
+      }
+      if (backseatChecked) {
+        promises.push(fetchSlots('backseat.txt', 'backseat').then(arr => { backseatSlots = arr; }));
+      }
+      if (octoplayChecked) {
+        promises.push(fetchSlots('octoplay.txt', 'octoplay').then(arr => { octoplaySlots = arr; }));
+      }
+      if (peterChecked) {
+        promises.push(fetchSlots('peter.txt', 'peter').then(arr => { peterSlots = arr; }));
+      }
+      if (elkChecked) {
+        promises.push(fetchSlots('elk.txt', 'elk').then(arr => { elkSlots = arr; }));
+      }
+      if (thunderChecked) {
+        promises.push(fetchSlots('thunder.txt', 'thunder').then(arr => { thunderSlots = arr; }));
+      }
+      if (popiChecked) {
+        promises.push(fetchSlots('popi.txt', 'popi').then(arr => { popiSlots = arr; }));
+      }
+      if (bgamingChecked) {
+        promises.push(fetchSlots('bgaming.txt', 'bgaming').then(arr => { bgamingSlots = arr; }));
+      }
+      if (printChecked) {
+        promises.push(fetchSlots('print.txt', 'print').then(arr => { printSlots = arr; }));
+      }
+      if (bullsharkChecked) {
+        promises.push(fetchSlots('bullshark.txt', 'bullshark').then(arr => { bullsharkSlots = arr; }));
+      }
+      if (netentChecked) {
+        promises.push(fetchSlots('netent.txt', 'netent').then(arr => { netentSlots = arr; }));
+      }
+      Promise.all(promises)
+        .then(() => {
+          if (pragmaticChecked || hacksawChecked || nolimitChecked || massiveChecked ||
+              twistChecked || pushChecked || relaxChecked || playngoChecked || titanChecked ||
+              avataruxChecked || backseatChecked || octoplayChecked || peterChecked ||
+              elkChecked || thunderChecked || popiChecked || bgamingChecked || printChecked ||
+              bullsharkChecked || netentChecked) {
+            slots = [];
+            if(pragmaticChecked) slots = slots.concat(pragmaticSlots);
+            if(hacksawChecked) slots = slots.concat(hacksawSlots);
+            if(nolimitChecked) slots = slots.concat(nolimitSlots);
+            if(massiveChecked) slots = slots.concat(massiveSlots);
+            if(twistChecked) slots = slots.concat(twistSlots);
+            if(pushChecked) slots = slots.concat(pushSlots);
+            if(relaxChecked) slots = slots.concat(relaxSlots);
+            if(playngoChecked) slots = slots.concat(playngoSlots);
+            if(titanChecked) slots = slots.concat(titanSlots);
+            if(avataruxChecked) slots = slots.concat(avataruxSlots);
+            if(backseatChecked) slots = slots.concat(backseatSlots);
+            if(octoplayChecked) slots = slots.concat(octoplaySlots);
+            if(peterChecked) slots = slots.concat(peterSlots);
+            if(elkChecked) slots = slots.concat(elkSlots);
+            if(thunderChecked) slots = slots.concat(thunderSlots);
+            if(popiChecked) slots = slots.concat(popiSlots);
+            if(bgamingChecked) slots = slots.concat(bgamingSlots);
+            if(printChecked) slots = slots.concat(printSlots);
+            if(bullsharkChecked) slots = slots.concat(bullsharkSlots);
+            if(netentChecked) slots = slots.concat(netentSlots);
+          } else {
+            slots = [];
+            alert('Please select at least one provider.');
+          }
+          shuffleArray(slots);
+          updateSliderDisplay();
+        })
+        .catch(err => console.error("Error loading slots:", err));
+    }
+
+    // Helper: Get weighted random slot from allowed array.
+    function getRandomFromAllowed(allowed, threshold) {
+      if (allowed.length <= threshold) {
+        return allowed[Math.floor(Math.random() * allowed.length)];
+      } else {
+        return (Math.random() < 0.7)
+          ? allowed[Math.floor(Math.random() * threshold)]
+          : allowed[threshold + Math.floor(Math.random() * (allowed.length - threshold))];
+      }
+    }
+
+    // Weighted random selection from selected providers.
+    function getWeightedRandomSlot() {
+      const selectedProviders = [];
+      if (document.getElementById('pragmaticCheckbox').checked) {
+        let allowed = pragmaticSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "pragmatic", allowed: allowed, threshold: 30 });
+      }
+      if (document.getElementById('hacksawCheckbox').checked) {
+        let allowed = hacksawSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "hacksaw", allowed: allowed, threshold: 16 });
+      }
+      if (document.getElementById('nolimitCheckbox').checked) {
+        let allowed = nolimitSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "nolimit", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('massiveCheckbox').checked) {
+        let allowed = massiveSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "massive", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('twistCheckbox').checked) {
+        let allowed = twistSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "twist", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('pushCheckbox').checked) {
+        let allowed = pushSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "push", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('relaxCheckbox').checked) {
+        let allowed = relaxSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "relax", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('playngoCheckbox').checked) {
+        let allowed = playngoSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "playngo", allowed: allowed, threshold: 30 });
+      }
+      if (document.getElementById('titanCheckbox').checked) {
+        let allowed = titanSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "titan", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('avataruxCheckbox').checked) {
+        let allowed = avataruxSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "avatarux", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('backseatCheckbox').checked) {
+        let allowed = backseatSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "backseat", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('octoplayCheckbox').checked) {
+        let allowed = octoplaySlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "octoplay", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('peterCheckbox').checked) {
+        let allowed = peterSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "peter", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('elkCheckbox').checked) {
+        let allowed = elkSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "elk", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('thunderCheckbox').checked) {
+        let allowed = thunderSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "thunder", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('popiCheckbox').checked) {
+        let allowed = popiSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "popi", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('bgamingCheckbox').checked) {
+        let allowed = bgamingSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "bgaming", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('printCheckbox').checked) {
+        let allowed = printSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "print", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('bullsharkCheckbox').checked) {
+        let allowed = bullsharkSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "bullshark", allowed: allowed, threshold: 20 });
+      }
+      if (document.getElementById('netentCheckbox').checked) {
+        let allowed = netentSlots.filter(slot => {
+          let name = slot.dataset.name.toLowerCase();
+          return !(name.includes('bacarrat') || name.includes('roulette') || name.includes('blackjack'));
+        });
+        if (allowed.length > 0) selectedProviders.push({ provider: "netent", allowed: allowed, threshold: 20 });
+      }
+      
+      if (selectedProviders.length === 0) return null;
+      let chosenProvider = (selectedProviders.length === 1)
+        ? selectedProviders[0]
+        : selectedProviders[Math.floor(Math.random() * selectedProviders.length)];
+      return getRandomFromAllowed(chosenProvider.allowed, chosenProvider.threshold);
+    }
+
+    // When "Pick Random Slot" is clicked, center the chosen slot and show modal.
+    document.getElementById('randomButton').addEventListener('click', () => {
+      let chosenSlot = getWeightedRandomSlot();
+      if (!chosenSlot) {
+        alert('No allowed slots loaded!');
+        return;
+      }
+      const slider = document.getElementById('slider');
+      const sliderSlots = Array.from(slider.children).slice(0, slots.length);
+      let chosenId = chosenSlot.dataset.slotId;
+      let finalIndex = sliderSlots.findIndex(el => el.dataset.slotId === chosenId);
+      if (finalIndex === -1) finalIndex = 0;
+      
+      document.getElementById('randomButton').disabled = true;
+      
+      const sliderContainer = document.getElementById('sliderContainer');
+      const containerCenter = sliderContainer.offsetWidth / 2;
+      const chosenSlotElement = sliderSlots[finalIndex];
+      const chosenSlotCenter = chosenSlotElement.offsetLeft + chosenSlotElement.offsetWidth / 2;
+      let baseTarget = containerCenter - chosenSlotCenter;
+      
+      const effectiveWidth = chosenSlotElement.offsetWidth + 10;
+      let cycleWidth = slots.length * effectiveWidth;
+      let desiredDistance = 7 * speed;
+      let extraLoops = Math.floor((desiredDistance - Math.abs(baseTarget)) / cycleWidth);
+      if (extraLoops < 1) extraLoops = 1;
+      let target = baseTarget - extraLoops * cycleWidth;
+      
+      let distance = Math.abs(target - currentTranslate);
+      let computedDuration = distance / speed;
+      let duration = computedDuration > 7 ? 7 : computedDuration;
+      
+      slider.style.transition = `transform ${duration}s ease-in-out`;
+      slider.style.transform = `translateX(${target}px)`;
+      
+      setTimeout(() => {
+        slider.style.transition = 'none';
+        slider.style.transform = `translateX(${baseTarget}px)`;
+        currentTranslate = baseTarget;
+        sliderSlots.forEach(el => el.classList.remove('highlight'));
+        let chosenEl = sliderSlots.find(el => el.dataset.slotId === chosenId);
+        if (chosenEl) {
+          chosenEl.classList.add('highlight');
+          selectedSlot = chosenEl;
+        }
+        showModal(selectedSlot);
+      }, duration * 1000);
+    });
+
+    // Show the modal with the chosen slot.
+    function showModal(slot) {
+      const modal = document.getElementById('modal');
+      const modalSlotImage = document.getElementById('modalSlotImage');
+      let modalSlotName = document.getElementById('modalSlotName');
+      const modalPlayButton = document.getElementById('modalPlayButton');
+      modalSlotImage.src = slot.querySelector('img').src;
+      
+      // Remove any known provider names from the slot name.
+      const providerRemovalMap = {
+        pragmatic: /Pragmatic\s*Play/gi,
+        nolimit: /Nolimit\s*City/gi,
+        massive: /Massive\s*Studios/gi,
+        twist: /Twist\s*Gaming/gi,
+        push: /Push\s*Gaming/gi,
+        relax: /Relax\s*Gaming/gi,
+        playngo: /Play'?n\s*Go/gi,
+        titan: /Titan\s*Gaming/gi,
+        avatarux: /AvatarUX\s*Studios/gi,
+        backseat: /Backseat\s*Gaming/gi,
+        octoplay: /Octoplay/gi,
+        peter: /Peter\s*&\s*Sons/gi,
+        elk: /ELK\s*Studios/gi,
+        thunder: /Thunderkick/gi,
+        popi: /Popiplay/gi,
+        bgaming: /BGaming/gi,
+        print: /Print\s*Studios/gi,
+        bullshark: /Bullshark\s*Games/gi,
+        netent: /Netent/gi
+      };
+      let displayName = slot.dataset.name.trim();
+      Object.values(providerRemovalMap).forEach(regex => {
+        displayName = displayName.replace(regex, "").trim();
+      });
+      modalSlotName.textContent = displayName;
+      
+      let originalLink = slot.dataset.link;
+      function updatePlayLink() {
+        const selectedDomain = domainSelector.value;
+        let updatedLink = originalLink.replace(/stake\.com/i, selectedDomain);
+        modalPlayButton.onclick = () => {
+          window.open(updatedLink, '_blank');
+          hideModal();
+        };
+      }
+      updatePlayLink();
+      domainSelector.onchange = updatePlayLink;
+      modal.style.display = 'flex';
+      setTimeout(() => modal.classList.add('show'), 10);
+      document.getElementById('modalCancelButton').onclick = hideModal;
+      
+      // Generate Random Task functionality.
+      document.getElementById('modalTaskButton').onclick = function() {
+        const tasks = [
+          "do 30 spins",
+          "do 50 spins",
+          "do 100 spins",
+          "Buy a Super Bonus",
+          "Buy a Normal bonus",
+          "do 10 feature spins",
+          "do 20 feature spins",
+          "do 30 feature spins"
+        ];
+        const randomTask = tasks[Math.floor(Math.random() * tasks.length)];
+        document.getElementById('taskDisplay').textContent = randomTask;
+      };
+    }
+
+    function hideModal() {
+      const modal = document.getElementById('modal');
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.style.display = 'none';
+        document.getElementById('randomButton').disabled = false;
+        reshuffleSlots();
+        document.getElementById('taskDisplay').textContent = '';
+      }, 300);
+    }
+
+    function reshuffleSlots() {
+      shuffleArray(slots);
+      updateSliderDisplay();
+    }
+
+    document.addEventListener('DOMContentLoaded', loadSlots);
+  </script>
+</body>
+</html>
