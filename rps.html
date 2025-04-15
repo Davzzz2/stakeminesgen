@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rock Paper Scissors Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --background: 220 100% 1%;
+      --foreground: 220 100% 97%;
+      --muted: 220 51% 36%;
+      --muted-foreground: 220 100% 97%;
+      --popover: 220 70% 12%;
+      --popover-foreground: 220 100% 97%;
+      --card: 220 70% 12%;
+      --card-foreground: 220 100% 97%;
+      --border: 220 51% 36%;
+      --input: 220 51% 36%;
+      --primary: 220 73% 63%;
+      --primary-foreground: 220 89% 99%;
+      --secondary: 220 51% 36%;
+      --secondary-foreground: 220 100% 97%;
+      --accent: 220 51% 36%;
+      --accent-foreground: 220 100% 97%;
+      --destructive: 0 62.8% 30.6%;
+      --destructive-foreground: 0 0% 98%;
+      --ring: 220 73% 63%;
+      --radius: 0.75rem;
+    }
+
+    body {
+      font-family: 'Montserrat', Arial, sans-serif;
+      background: linear-gradient(135deg, 
+        hsl(220, 100%, 1%) 0%,
+        hsl(220, 70%, 12%) 50%,
+        hsl(220, 100%, 1%) 100%
+      );
+      color: hsl(var(--foreground));
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      position: relative;
+      opacity: 0;
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 20%, hsla(220, 73%, 63%, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, hsla(220, 73%, 63%, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+      opacity: 0.5;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
+
+    @keyframes tilePop {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes tileGlow {
+      0% {
+        box-shadow: 0 0 10px hsla(var(--primary), 0.3);
+      }
+      50% {
+        box-shadow: 0 0 20px hsla(var(--primary), 0.6);
+      }
+      100% {
+        box-shadow: 0 0 10px hsla(var(--primary), 0.3);
+      }
+    }
+
+    @keyframes tileHover {
+      0% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 0 0 15px hsla(var(--primary), 0.8);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    h1:hover {
+      text-shadow: 0 0 25px hsla(var(--primary), 0.9);
+    }
+
+    /* Container for one-line layout */
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    label {
+      font-size: 1.08em;
+      color: hsl(var(--foreground));
+    }
+
+    input[type="number"],
+    select {
+      padding: 6px;
+      margin: 0 6px;
+      border: 1px solid hsl(var(--primary));
+      border-radius: var(--radius);
+      background-color: hsla(var(--card), 0.5);
+      color: hsl(var(--foreground));
+      box-sizing: border-box;
+      font-size: 1.08em;
+      width: 96px;
+    }
+
+    select {
+      background-color: transparent;
+      width: auto;
+      cursor: pointer;
+      padding: 8px 12px;
+      border: 1px solid hsl(var(--primary));
+      border-radius: var(--radius);
+      color: hsl(var(--foreground));
+      font-size: 1.1em;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px hsla(var(--primary), 0.3);
+    }
+
+    select:focus {
+      outline: none;
+      border-color: hsl(var(--primary));
+      box-shadow: 0 0 15px hsla(var(--primary), 0.5);
+    }
+
+    select option {
+      background-color: hsla(var(--card), 0.9);
+      color: hsl(var(--foreground));
+      padding: 8px;
+    }
+
+    select option:hover {
+      background-color: hsla(var(--primary), 0.3);
+    }
+
+    select option:checked {
+      background-color: hsla(var(--primary), 0.5);
+      color: hsl(var(--primary-foreground));
+    }
+
+    #numCoins {
+      background-color: transparent;
+      color: hsl(var(--foreground));
+    }
+
+    #numCoins option {
+      background-color: rgba(0, 0, 0, 0.9);
+      color: hsl(var(--foreground));
+      padding: 8px;
+      font-size: 1.1em;
+    }
+
+    #numCoins:focus {
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    button {
+      background-color: hsla(var(--card), 0.5);
+      color: hsl(var(--primary));
+      border: 2px solid hsl(var(--primary));
+      border-radius: var(--radius);
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 1.08em;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 20px hsla(var(--primary), 0.3);
+    }
+
+    button:hover {
+      background-color: hsla(var(--card), 0.7);
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px hsla(var(--primary), 0.5);
+    }
+    
+    /* Coin display area */
+    #coinDisplay {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .coin-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    
+    .coin {
+      width: 70px;
+      height: 70px;
+      animation: tilePop 0.3s ease-out forwards;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
+    .coin:hover {
+      animation: tileHover 1s infinite ease-in-out;
+      box-shadow: 0 0 20px hsla(var(--primary), 0.6);
+    }
+
+    /* Stats panel */
+    #statsPanel {
+      display: none;
+      border-top: 2px solid hsl(var(--primary));
+      padding-top: 10px;
+      font-family: 'Montserrat', Arial, sans-serif;
+      max-width: 300px;
+      margin: 20px auto 0 auto;
+      text-align: center;
+      font-size: 1.3em;
+      color: hsl(var(--foreground));
+      text-shadow: 0 0 10px hsla(var(--primary), 0.5);
+    }
+
+    #statsPanel div {
+      margin: 5px 0;
+    }
+
+    /* Back button styles from flip.html */
+    #backButton {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background-color: transparent;
+      cursor: pointer;
+      border: 0;
+      width: 56px;
+      height: 56px;
+      margin: 0;
+      overflow: hidden;
+      outline: none;
+    }
+
+    .button:before,
+    .button:after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      inset: 7px;
+    }
+
+    .button:before {
+      border: 4px solid #f0eeef;
+      transition: opacity 0.4s cubic-bezier(0.77, 0, 0.175, 1) 80ms,
+          transform 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) 80ms;
+    }
+
+    .button:after {
+      border: 4px solid #96daf0;
+      transform: scale(1.3);
+      transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+          transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      opacity: 0;
+    }
+
+    .button:hover:before,
+    .button:focus:before {
+      opacity: 0;
+      transform: scale(0.7);
+      transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+          transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .button:hover:after,
+    .button:focus:after {
+      opacity: 1;
+      transform: scale(1);
+      transition: opacity 0.4s cubic-bezier(0.77, 0, 0.175, 1) 80ms,
+          transform 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) 80ms;
+    }
+
+    .button-box {
+      display: flex;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .button-elem {
+      display: block;
+      width: 20px;
+      height: 20px;
+      margin: 17px 18px 0 18px;
+      transform: rotate(180deg);
+      fill: #f0eeef;
+    }
+
+    .button:hover .button-box,
+    .button:focus .button-box {
+      transition: 0.4s;
+      transform: translateX(-56px);
+    }
+
+    /* Custom scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 12px;
+      height: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: hsl(var(--card));
+      border-radius: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: hsl(var(--primary));
+      border-radius: 6px;
+      border: 3px solid hsl(var(--card));
+    }
+
+    html {
+      scrollbar-width: thin;
+      scrollbar-color: hsl(var(--primary)) hsl(var(--card));
+    }
+
+    /* Mobile support */
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      h1 {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+      }
+      .form-row {
+        flex-direction: column;
+        gap: 8px;
+      }
+      label, input[type="number"], select, button {
+        font-size: 1em;
+      }
+      input[type="number"],
+      select {
+        width: 100%;
+        max-width: 300px;
+      }
+      #coinDisplay {
+        gap: 8px;
+      }
+      .coin {
+        width: 60px;
+        height: 60px;
+      }
+      #statsPanel {
+        max-width: 90%;
+        font-size: 1.2em;
+      }
+      #backButton {
+        width: 60px;
+        height: 60px;
+        font-size: 32px;
+        top: 15px;
+        left: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="button" id="backButton">
+    <div class="button-box">
+      <span class="button-elem">
+        <svg viewBox="0 0 46 40" xmlns="http://www.w3.org/2000/svg">
+          <path d="M46 20.038c0-.7-.3-1.5-.8-2.1l-16-17c-1.1-1-3.2-1.4-4.4-.3-1.2 1.1-1.2 3.3 0 4.4l11.3 11.9H3c-1.7 0-3 1.3-3 3s1.3 3 3 3h33.1l-11.3 11.9c-1 1-1.2 3.3 0 4.4 1.2 1.1 3.3.8 4.4-.3l16-17c.5-.5.8-1.1.8-1.9z"></path>
+        </svg>
+      </span>
+      <span class="button-elem">
+        <svg viewBox="0 0 46 40">
+          <path d="M46 20.038c0-.7-.3-1.5-.8-2.1l-16-17c-1.1-1-3.2-1.4-4.4-.3-1.2 1.1-1.2 3.3 0 4.4l11.3 11.9H3c-1.7 0-3 1.3-3 3s1.3 3 3 3h33.1l-11.3 11.9c-1 1-1.2 3.3 0 4.4 1.2 1.1 3.3.8 4.4-.3l16-17c.5-.5.8-1.1.8-1.9z"></path>
+        </svg>
+      </span>
+    </div>
+  </button>
+  <h1>Rock Paper Scissors Assistant</h1>
+  <div class="form-row">
+    <label for="betAmount">Bet Amount:</label>
+    <input type="number" id="betAmount" placeholder="Bet" value="0.01" step="0.01">
+    <button id="doubleBtn">2x</button>
+    <button id="halfBtn">½</button>
+    <label for="numCoins">Number of Hands:</label>
+    <select id="numCoins">
+      <!-- Options 1 to 20 -->
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="17">17</option>
+      <option value="18">18</option>
+      <option value="19">19</option>
+      <option value="20">20</option>
+    </select>
+  </div>
+  
+  <div style="text-align: center; margin-top: 20px;">
+    <button id="randomizeBtn">Randomize</button>
+  </div>
+  
+  <div id="coinDisplay"></div>
+
+  <!-- Stats Panel -->
+  <div id="statsPanel">
+    <div id="multiplierDisplay">Multiplier: 1.96x</div>
+    <div id="winAmountDisplay">Win Amount: $0.02</div>
+    <div id="winChanceDisplay">Win Chance: 50.0000%</div>
+  </div>
+
+  <script>
+    // Function to parse bet amount
+    function parseBet() {
+      let bet = parseFloat(document.getElementById('betAmount').value);
+      return isNaN(bet) ? 0 : bet;
+    }
+
+    // Function to update bet amount input based on the condition
+    function updateBet(newBet) {
+      if(newBet >= 0.01) {
+        document.getElementById('betAmount').value = newBet.toFixed(2);
+      } else {
+        document.getElementById('betAmount').value = newBet.toFixed(4);
+      }
+      updateStats();
+    }
+
+    let manualInput = false;
+    const betInput = document.getElementById('betAmount');
+
+    betInput.addEventListener('keydown', function(e) {
+      if(e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        manualInput = true;
+      }
+    });
+
+    betInput.addEventListener('focus', function() {
+      manualInput = false;
+    });
+
+    betInput.addEventListener('input', function() {
+      if (!manualInput) {
+        let bet = parseFloat(this.value);
+        if(bet < 0.01) {
+          this.value = "0.01";
+        }
+      }
+      manualInput = false;
+      updateStats();
+    });
+
+    document.getElementById('doubleBtn').addEventListener('click', function() {
+      let bet = parseBet();
+      updateBet(bet * 2);
+    });
+
+    document.getElementById('halfBtn').addEventListener('click', function() {
+      let bet = parseBet();
+      updateBet(bet / 2);
+    });
+
+    function getCoinDistribution(n) {
+      switch(n) {
+        case 1: return [1];
+        case 2: return [2];
+        case 3: return [3];
+        case 4: return [2, 2];
+        case 5: return [3, 2];
+        case 6: return [3, 3];
+        case 7: return [4, 3];
+        case 8: return [4, 4];
+        case 9: return [3, 3, 3];
+        case 10: return [3, 4, 3];
+        case 11: return [4, 4, 3];
+        case 12: return [4, 4, 4];
+        case 13: return [4, 5, 4];
+        case 14: return [5, 5, 4];
+        case 15: return [5, 5, 5];
+        case 16: return [4, 4, 4, 4];
+        case 17: return [5, 5, 4, 3];
+        case 18: return [5, 5, 5, 3];
+        case 19: return [5, 5, 5, 4];
+        case 20: return [5, 5, 5, 5];
+        default: return [];
+      }
+    }
+
+    // Add page transition for back button
+    document.getElementById('backButton').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.body.style.animation = 'fadeOut 0.5s ease forwards';
+      setTimeout(() => {
+        window.location.href = '../index.html';
+      }, 500);
+    });
+
+    // Function to display coins with staggered animation
+    function displayCoins() {
+      const coinDisplay = document.getElementById('coinDisplay');
+      coinDisplay.innerHTML = '';
+
+      const numCoins = parseInt(document.getElementById('numCoins').value);
+      const distribution = getCoinDistribution(numCoins);
+      const coinImages = [
+        "https://stake.com/_app/immutable/assets/player-paper.DiENpi7s.svg",
+        "https://stake.com/_app/immutable/assets/player-scissors.C0v8j3k_.svg",
+        "https://stake.com/_app/immutable/assets/player-rock.BWvySbsn.svg"
+      ];
+
+      distribution.forEach((rowCount, rowIndex) => {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'coin-row';
+        rowDiv.style.animationDelay = `${rowIndex * 0.1}s`;
+
+        for (let i = 0; i < rowCount; i++) {
+          const coin = document.createElement('img');
+          coin.className = 'coin';
+          coin.src = coinImages[Math.floor(Math.random() * coinImages.length)];
+          coin.style.animationDelay = `${(rowIndex * 0.1) + (i * 0.05)}s`;
+          rowDiv.appendChild(coin);
+        }
+        coinDisplay.appendChild(rowDiv);
+      });
+      
+      currentMultiplierIndex = numCoins - 1;
+      document.getElementById('statsPanel').style.display = 'block';
+      updateStats();
+    }
+    
+    document.getElementById('randomizeBtn').addEventListener('click', displayCoins);
+
+    // --- Stats Panel functionality ---
+
+    // Multipliers array as provided
+    const multipliers = [
+      1.96, 3.92, 7.84, 15.68, 31.36, 62.72,
+      125.44, 250.88, 501.76, 1003.52, 2007.04,
+      4014.08, 8028.16, 16056.32, 32112.64, 64225.28,
+      128450.56, 256901.12, 513802.24, 1027604.48
+    ];
+    
+    // Current multiplier index (base on number of coins)
+    let currentMultiplierIndex = 0;
+
+    // DOM elements for stats panel
+    const multiplierDisplay = document.getElementById("multiplierDisplay");
+    const winAmountDisplay = document.getElementById("winAmountDisplay");
+    const winChanceDisplay = document.getElementById("winChanceDisplay");
+
+    // Function to update the stats panel
+    function updateStats() {
+      const betAmount = parseBet();
+      // Ensure index is within range; if not, default to the last available multiplier
+      const index = Math.min(currentMultiplierIndex, multipliers.length - 1);
+      const currentMultiplier = multipliers[index];
+      
+      // Update multiplier display
+      multiplierDisplay.textContent = "Multiplier: " + currentMultiplier.toFixed(2) + "x";
+      
+      // Calculate win amount
+      const winAmount = betAmount * currentMultiplier;
+      
+      // Display win amount with 2 decimals if bet amount is 0.01 or above, otherwise 4 decimals
+      if (betAmount >= 0.01) {
+        winAmountDisplay.textContent = "Win Amount: $" + winAmount.toFixed(2);
+      } else {
+        winAmountDisplay.textContent = "Win Amount: $" + winAmount.toFixed(4);
+      }
+      
+      // Calculate win chance: 50% for one coin; halves for each additional coin selected, displayed with 4 decimals
+      let winChance = 50 / Math.pow(2, index);
+      winChanceDisplay.textContent = "Win Chance: " + winChance.toFixed(4) + "%";
+    }
+    
+    // Initial update (remains hidden until coins are generated)
+    updateStats();
+  </script>
+</body>
+</html>
