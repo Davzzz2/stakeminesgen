@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="gamble-assist.ico" type="image/x-icon">
+  <link rel="stylesheet" href="styles.css">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Dragon Tower Assistant</title>
+  <style>
+    :root {
+      --background: 220 100% 1%;
+      --foreground: 220 100% 97%;
+      --muted: 220 51% 36%;
+      --muted-foreground: 220 100% 97%;
+      --popover: 220 70% 12%;
+      --popover-foreground: 220 100% 97%;
+      --card: 220 70% 12%;
+      --card-foreground: 220 100% 97%;
+      --border: 220 51% 36%;
+      --input: 220 51% 36%;
+      --primary: 220 73% 63%;
+      --primary-foreground: 220 89% 99%;
+      --secondary: 220 51% 36%;
+      --secondary-foreground: 220 100% 97%;
+      --accent: 220 51% 36%;
+      --accent-foreground: 220 100% 97%;
+      --destructive: 0 62.8% 30.6%;
+      --destructive-foreground: 0 0% 98%;
+      --ring: 220 73% 63%;
+      --radius: 0.75rem;
+    }
+
+    @keyframes pageTransitionIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pageTransitionOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
+
+    @keyframes tileSelect {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 10px white;
+      }
+      50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px hsl(220, 73%, 63%);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px hsl(220, 73%, 63%);
+      }
+    }
+
+    @keyframes tileHover {
+      0% {
+        transform: scale(1);
+      }
+      100% {
+        transform: scale(1.05);
+      }
+    }
+
+    body {
+      background: linear-gradient(135deg, 
+        hsl(220, 100%, 1%) 0%,
+        hsl(220, 70%, 12%) 50%,
+        hsl(220, 100%, 1%) 100%
+      );
+      font-family: Arial, sans-serif;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      position: relative;
+      flex-direction: column;
+      cursor: none;
+      animation: pageTransitionIn 0.5s ease-out forwards;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 20%, hsla(220, 73%, 63%, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, hsla(220, 73%, 63%, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      display: none;
+    }
+
+    #cursor {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+    }
+
+    .trail {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      mix-blend-mode: difference;
+      animation: fadeOut 0.5s forwards;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+    }
+
+    .title {
+      position: relative;
+      z-index: 2;
+      top: -100px;
+      text-align: center;
+      background-color: rgba(44, 62, 80, 0.8);
+      padding: 10px 20px;
+      border: 2px solid white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px 2px white;
+      font-size: 2rem;
+      width: 400px;
+      margin: 0 auto;
+    }
+
+    .controls {
+      position: relative;
+      z-index: 3;
+      top: 25%;
+      left: -250px;
+      transform: translateY(-50%);
+      margin-right: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      background: rgba(44, 62, 80, 0.8);
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px 2px white;
+    }
+
+    .container {
+      position: relative;
+      z-index: 4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .grid {
+      position: relative;
+      z-index: 5;
+      display: grid;
+      gap: 10px;
+      margin-top: -300px;
+      justify-items: center;
+    }
+
+    .tile {
+      position: relative;
+      z-index: 6;
+      width: 50px;
+      height: 50px;
+      background-color: rgba(44, 62, 80, 0.8);
+      border: 2px solid white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px white;
+      transition: all 0.3s ease;
+    }
+
+    .tile:hover {
+      animation: tileHover 0.3s ease forwards;
+    }
+
+    .tile.selected {
+      animation: tileSelect 0.5s ease forwards;
+      background-color: hsl(220, 73%, 63%);
+      box-shadow: 0 0 10px hsl(220, 73%, 63%);
+    }
+
+    button {
+      position: relative;
+      z-index: 7;
+      background-color: rgba(44, 62, 80, 0.8);
+      color: white;
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid white;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0px 0px 10px 2px white;
+    }
+
+    button:hover {
+      background-color: hsl(220, 73%, 63%);
+      box-shadow: 0 0 10px hsl(220, 73%, 63%);
+    }
+
+    select, input {
+      position: relative;
+      z-index: 7;
+      background-color: rgba(44, 62, 80, 0.8);
+      color: white;
+      border: 2px solid white;
+      border-radius: 5px;
+      padding: 5px;
+    }
+
+    #multiplierDisplay {
+      position: relative;
+      z-index: 8;
+      bottom: -15px;
+      right: 0px;
+      text-align: center;
+      background-color: rgba(44, 62, 80, 0.8);
+      padding: 5px;
+      width: 200px;
+      height: 40px;
+      border: 2px solid white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px 2px white;
+      font-size: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #backButton {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: transparent;
+      cursor: pointer;
+      border: 0;
+      width: 56px;
+      height: 56px;
+      margin: 0;
+      overflow: hidden;
+      outline: none;
+      z-index: 1001;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: none;
+    }
+
+    .button:before,
+    .button:after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      inset: 7px;
+    }
+
+    .button:before {
+      border: 4px solid #f0eeef;
+      transition: opacity 0.4s cubic-bezier(0.77, 0, 0.175, 1) 80ms,
+          transform 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) 80ms;
+    }
+
+    .button:after {
+      border: 4px solid #96daf0;
+      transform: scale(1.3);
+      transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+          transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      opacity: 0;
+    }
+
+    .button:hover:before,
+    .button:focus:before {
+      opacity: 0;
+      transform: scale(0.7);
+      transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+          transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .button:hover:after,
+    .button:focus:after {
+      opacity: 1;
+      transform: scale(1);
+      transition: opacity 0.4s cubic-bezier(0.77, 0, 0.175, 1) 80ms,
+          transform 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) 80ms;
+    }
+
+    .button-box {
+      display: flex;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .button-elem {
+      display: block;
+      width: 20px;
+      height: 20px;
+      margin: 17px 18px 0 18px;
+      transform: rotate(180deg);
+      fill: #f0eeef;
+    }
+
+    .button:hover .button-box,
+    .button:focus .button-box {
+      transition: 0.4s;
+      transform: translateX(-56px);
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      color: white;
+      font-size: 1.2rem;
+      text-shadow: 0 0 14px white;
+      z-index: 9;
+      padding: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    /* Mobile Styles */
+    @media only screen and (max-width: 768px) {
+      body {
+        height: auto;
+        padding-bottom: 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #backButton {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        margin: 0;
+        font-size: 24px;
+        width: 45px;
+        height: 45px;
+      }
+      .title {
+        position: absolute;
+        top: 10px;
+        left: 90px;
+        margin: 0;
+        width: auto;
+        font-size: 1.5rem;
+        border: none;
+        box-shadow: none;
+        padding: 10px 0;
+        font-weight: bold;
+        text-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+      }
+      .controls {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+        margin: 60px auto 0 auto;
+        width: 90%;
+        max-width: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: none;
+        box-shadow: none;
+        padding: 10px;
+        border-radius: 10px;
+      }
+      .container {
+        margin: 10px auto;
+        width: 90%;
+        display: flex;
+        justify-content: center;
+      }
+      .grid {
+        margin: 10px auto;
+        justify-items: center;
+      }
+      #multiplierDisplay {
+        position: static !important;
+        margin: 10px auto;
+        width: 90%;
+        max-width: 300px;
+        height: auto !important;
+        border: 2px solid white;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: none;
+        text-align: center;
+      }
+      footer {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 1rem;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="cursor"></div> <!-- Custom cursor element -->
+  <button class="button" id="backButton">
+    <div class="button-box">
+      <span class="button-elem">
+        <svg viewBox="0 0 46 40" xmlns="http://www.w3.org/2000/svg">
+          <path d="M46 20.038c0-.7-.3-1.5-.8-2.1l-16-17c-1.1-1-3.2-1.4-4.4-.3-1.2 1.1-1.2 3.3 0 4.4l11.3 11.9H3c-1.7 0-3 1.3-3 3s1.3 3 3 3h33.1l-11.3 11.9c-1 1-1.2 3.3 0 4.4 1.2 1.1 3.3.8 4.4-.3l16-17c.5-.5.8-1.1.8-1.9z"></path>
+        </svg>
+      </span>
+    </div>
+  </button>
+  <div class="title">Dragon Tower Assistant</div>
+  <div class="controls">
+    <label for="difficulty">Select Difficulty:</label>
+    <select id="difficulty">
+      <option value="low">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+      <option value="expert">Expert</option>
+      <option value="master">Master</option>
+    </select>
+    <label for="tilesToPick">Number of Tiles to Pick:</label>
+    <input type="number" id="tilesToPick" min="1" max="9" value="5">
+    <label for="betAmount">Bet Amount:</label>
+    <input type="number" id="betAmount" min="0" step="0.01" value="0.00" oninput="updateWinAmount()">
+    <button onclick="generatePattern()">Generate Pattern</button>
+    <button onclick="randomizePattern()">Randomize</button>
+  </div>
+  <div class="container">
+    <div class="grid" id="tileGrid"></div>
+  </div>
+  <div id="multiplierDisplay">
+    Multiplier: x1.00<br>
+    <span class="win-amount">Win Amount: $0.00</span>
+  </div>
+  <footer>
+    <p>© 2024 GambleAssist. All rights reserved.</p>
+  </footer>
+  <script>
+    // Cursor effect and movement
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', (event) => {
+      const x = event.pageX;
+      const y = event.pageY;
+      // Update the position of the custom cursor
+      cursor.style.left = `${x - 10}px`;
+      cursor.style.top = `${y - 10}px`;
+      // Create a new trail element
+      const trail = document.createElement('div');
+      trail.className = 'trail';
+      trail.style.left = `${x - 5}px`;
+      trail.style.top = `${y - 5}px`;
+      // Append the trail to the body
+      document.body.appendChild(trail);
+      // Remove the trail after 500ms
+      setTimeout(() => {
+        trail.remove();
+      }, 500);
+    });
+    const multipliers = {
+      low: [1.31, 1.74, 2.32, 3.10, 4.13, 5.51, 7.34, 9.79, 13.05],
+      medium: [1.47, 2.21, 3.31, 4.96, 7.44, 11.16, 16.74, 25.11, 37.67],
+      hard: [1.96, 3.92, 7.84, 15.68, 31.36, 62.72, 125.44, 250.88, 501.76],
+      expert: [2.94, 8.82, 26.46, 79.38, 238.14, 714.42, 2143.26, 6429.78, 19289.34],
+      master: [3.92, 15.68, 62.72, 250.88, 1003.52, 4014.08, 16056.32, 64225.28, 256901.12]
+    };
+    const difficultyTileMapping = { low: 4, medium: 3, hard: 2, expert: 3, master: 4 };
+    const tileGrid = [];
+    const gridContainer = document.getElementById('tileGrid');
+    const numRows = 9;
+    function createTileGrid() {
+      const selectedDifficulty = document.getElementById('difficulty').value;
+      const tilesPerRow = difficultyTileMapping[selectedDifficulty];
+      gridContainer.style.gridTemplateColumns = `repeat(${tilesPerRow}, 50px)`;
+      gridContainer.innerHTML = '';
+      tileGrid.length = 0;
+      for (let i = 0; i < numRows; i++) {
+        const row = [];
+        for (let j = 0; j < tilesPerRow; j++) {
+          const tile = document.createElement('div');
+          tile.classList.add('tile');
+          gridContainer.appendChild(tile);
+          row.push(tile);
+        }
+        tileGrid.push(row);
+      }
+    }
+    document.getElementById('difficulty').addEventListener('change', createTileGrid);
+    createTileGrid();
+    function generatePattern() {
+      const tilesToPick = parseInt(document.getElementById('tilesToPick').value);
+      const betAmount = parseFloat(document.getElementById('betAmount').value);
+      const selectedDifficulty = document.getElementById('difficulty').value;
+      if (isNaN(tilesToPick) || tilesToPick < 1 || tilesToPick > 9) {
+        alert('Please enter a valid number of tiles to pick between 1 and 9.');
+        return;
+      }
+      tileGrid.flat().forEach(tile => tile.classList.remove('selected'));
+      for (let i = numRows - 1; i >= numRows - tilesToPick; i--) {
+        const randomIndex = Math.floor(Math.random() * difficultyTileMapping[selectedDifficulty]);
+        tileGrid[i][randomIndex].classList.add('selected');
+      }
+      updateWinAmount();
+    }
+    function randomizePattern() {
+      const difficulties = Object.keys(multipliers);
+      const randomDifficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
+      const randomTilesToPick = Math.floor(Math.random() * 9) + 1;
+      document.getElementById('difficulty').value = randomDifficulty;
+      document.getElementById('tilesToPick').value = randomTilesToPick;
+      createTileGrid();
+      generatePattern();
+    }
+    function updateWinAmount() {
+      const betAmount = parseFloat(document.getElementById('betAmount').value) || 0;
+      const tilesToPick = parseInt(document.getElementById('tilesToPick').value) || 0;
+      const selectedDifficulty = document.getElementById('difficulty').value;
+      const multiplier = multipliers[selectedDifficulty][tilesToPick - 1] || 1.00;
+      const winAmount = (betAmount * multiplier).toFixed(2);
+      document.getElementById('multiplierDisplay').innerHTML = `
+        Multiplier: x${multiplier.toFixed(2)}<br>
+        <span class="win-amount">Win Amount: $${winAmount}</span>
+      `;
+    }
+
+    // Add page transition when leaving
+    document.getElementById('backButton').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.body.style.animation = 'pageTransitionOut 0.5s ease forwards';
+      setTimeout(() => {
+        window.location.href = '../index.html';
+      }, 500);
+    });
+
+    // Add hover effect for tiles
+    document.querySelectorAll('.tile').forEach(tile => {
+      tile.addEventListener('mouseenter', () => {
+        tile.style.transform = 'scale(1.05)';
+      });
+      tile.addEventListener('mouseleave', () => {
+        tile.style.transform = 'scale(1)';
+      });
+    });
+  </script>
+</body>
+</html>

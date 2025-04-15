@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Roulette Assistant</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0; 
+      min-height: 100vh; 
+      height: auto; 
+      overflow-x: hidden; 
+      overflow-y: auto;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, 
+          hsl(220, 100%, 1%) 0%,
+          hsl(220, 70%, 12%) 50%,
+          hsl(220, 100%, 1%) 100%
+      );
+      color: white;
+      position: relative;
+      padding-left: 20px;
+      opacity: 0;
+      animation: pageTransitionIn 0.5s ease-out forwards;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+          radial-gradient(circle at 20% 20%, hsla(220, 73%, 63%, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 80% 80%, hsla(220, 73%, 63%, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      display: none;
+    }
+
+    .button {
+      position: relative;
+      background: transparent;
+      cursor: pointer;
+      border: none;
+      width: 56px;
+      height: 56px;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+      outline: none;
+    }
+
+    .button:before,
+    .button:after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      inset: 7px;
+    }
+
+    .button:before {
+      border: 4px solid #f0eeef;
+      transition: opacity 0.4s cubic-bezier(0.77, 0, 0.175, 1) 80ms,
+          transform 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) 80ms;
+    }
+
+    .button:after {
+      border: 4px solid #96daf0;
+      transform: scale(1.3);
+      transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+          transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      opacity: 0;
+    }
+
+    .button:hover:before {
+      opacity: 0;
+      transform: scale(0.7);
+    }
+
+    .button:hover:after {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .button-box {
+      display: flex;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .button-elem {
+      display: flex;
+      width: 20px;
+      height: 20px;
+      transform: rotate(180deg);
+      fill: #f0eeef;
+    }
+
+    .button:hover .button-box {
+      transition: 0.4s;
+      transform: translateX(-56px);
+    }
+
+    #backButton {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: transparent;
+      cursor: pointer;
+      border: 0;
+      width: 56px;
+      height: 56px;
+      margin: 0;
+      overflow: hidden;
+      outline: none;
+      z-index: 1001;
+      padding: 0;
+    }
+    
+    h1 {
+      margin: 20px auto;
+      padding-top: 10px;
+      font-size: 36px;
+      position: relative;
+      z-index: 2;
+      text-shadow: 0 0 5px white;
+      width: 100%;
+      text-align: center;
+    }
+
+    .game-container {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 20px;
+      position: relative;
+      z-index: 2;
+      margin-left: 20px;
+    }
+
+    .coin-selector {
+      background-color: rgba(44, 62, 80, 0.8);
+      padding: 12px;
+      border-radius: 10px;
+      width: 280px;
+      min-height: auto;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border: 2px solid white;
+      box-shadow: 0 0 10px white;
+    }
+
+    .coin-selector h2 {
+      font-size: 16px;
+      margin: 0 0 5px 0;
+      text-shadow: 0 0 5px white;
+    }
+
+    .coin-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      align-content: space-evenly;
+      flex-grow: 1;
+    }
+
+    .coin-option {
+      cursor: pointer;
+      border: 2px solid white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      color: white;
+      box-shadow: 0 0 5px white;
+    }
+
+    .coin-option:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .coin-option.active {
+      background-color: #ffd700;
+      color: black;
+      border-color: gold;
+    }
+
+    .new-coin-form {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 14px;
+    }
+
+    .new-coin-form input[type="number"] {
+      padding: 3px;
+      border-radius: 3px;
+      border: 2px solid white;
+      background: rgba(44, 62, 80, 0.8);
+      color: white;
+    }
+
+    .new-coin-form button {
+      background-color: rgba(44, 62, 80, 0.8);
+      color: white;
+      border: 2px solid white;
+      padding: 3px 5px;
+      font-size: 14px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .new-coin-form button:hover {
+      background: white;
+      color: rgba(44, 62, 80, 0.8);
+    }
+
+    .board-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .roulette-board {
+      display: grid;
+      grid-template-columns: 50px repeat(12, 50px) 60px;
+      grid-template-rows: repeat(3, 50px) 60px;
+      gap: 5px;
+      background-color: rgba(44, 62, 80, 0.8);
+      padding: 25px;
+      border-radius: 10px;
+      position: relative;
+      border: 2px solid white;
+      box-shadow: 0 0 20px white;
+    }
+
+    .number-tile {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      border-radius: 5px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .number-tile.green {
+      background-color: #28a745;
+      grid-row: 1 / span 3;
+      grid-column: 1 / span 1;
+      z-index: 0;
+    }
+
+    .number-tile.red {
+      background-color: #ff2444;
+    }
+
+    .number-tile.black {
+      background-color: #304454;
+    }
+
+    .button-tile {
+      background-color: #10242c;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.3s;
+      border: 2px solid #2b4353;
+      position: relative;
+      z-index: 2;
+    }
+
+    .button-tile:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .moveable-button {
+      position: absolute;
+      background-color: rgba(44, 62, 80, 0.8);
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s;
+      padding: 9px;
+      border: 2px solid white;
+      box-shadow: 0 0 5px white;
+    }
+
+    .moveable-button:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .moveable-button.red {
+      background-color: #ff2444;
+    }
+
+    .moveable-button.black {
+      background-color: #304454;
+    }
+
+    #multiplier-display {
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      text-shadow: 0 0 5px white;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: left;
+      background-color: rgba(44, 62, 80, 0.8);
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid white;
+      box-shadow: 0 0 10px white;
+    }
+
+    .control-group label {
+      font-size: 16px;
+      text-shadow: 0 0 5px white;
+    }
+
+    .control-group input[type="number"] {
+      background-color: rgba(44, 62, 80, 0.8);
+      color: white;
+      border: 2px solid white;
+      padding: 5px;
+      font-size: 16px;
+      border-radius: 5px;
+      width: 80px;
+    }
+
+    .cycle-button, .action-button {
+      background-color: rgba(44, 62, 80, 0.8);
+      color: white;
+      border: 2px solid white;
+      padding: 5px 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 0 5px white;
+    }
+
+    .cycle-button:hover, .action-button:hover {
+      background: white;
+      color: rgba(44, 62, 80, 0.8);
+    }
+
+    .coin {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background-color: #ffd700;
+      color: black;
+      position: absolute;
+      z-index: 20;
+      font-size: 16px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      border: 2px solid white;
+      box-shadow: 0 0 5px white;
+      animation: tileSelect 0.5s ease forwards;
+    }
+
+    #win-display {
+      margin-top: 10px;
+      font-size: 16px;
+      text-shadow: 0 0 5px white;
+    }
+
+    /* Responsive styles for mobile devices */
+    @media (max-width: 992px) {
+      .roulette-board {
+        grid-template-columns: 40px repeat(12, 40px) 50px;
+        grid-template-rows: repeat(3, 40px) 50px;
+        gap: 4px;
+        padding: 15px;
+        transform: scale(0.95);
+        transform-origin: top center;
+      }
+
+      .game-container {
+        flex-direction: column;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-left: 0;
+      }
+      
+      .coin-selector {
+        width: 280px;
+        margin: 0 auto;
+      }
+      
+      .board-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS devices */
+        scrollbar-width: thin; /* Firefox */
+        scrollbar-color: #2b4353 #10242c; /* Firefox */
+      }
+      
+      .roulette-board .moveable-button {
+        font-size: 12px;
+        padding: 7px;
+        transform-origin: top left;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding-top: 10px;
+        padding-bottom: 20px;
+        padding-left: 0;
+      }
+      
+      h1 {
+        font-size: 24px;
+        margin: 30px auto 15px;
+        padding-top: 5px;
+      }
+      
+      #backButton {
+        top: 10px;
+        left: 10px;
+        width: 45px;
+        height: 45px;
+      }
+      
+      .game-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+        padding: 0 10px;
+        box-sizing: border-box;
+        margin-left: 0;
+      }
+      
+      .board-container {
+        width: 100%;
+        max-width: 580px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 10px 0;
+      }
+      
+      /* Custom scrollbar for WebKit browsers */
+      .board-container::-webkit-scrollbar {
+        height: 8px;
+      }
+      
+      .board-container::-webkit-scrollbar-track {
+        background: #10242c;
+        border-radius: 4px;
+      }
+      
+      .board-container::-webkit-scrollbar-thumb {
+        background: #2b4353;
+        border-radius: 4px;
+      }
+      
+      .roulette-board {
+        transform: scale(0.85);
+        transform-origin: left top;
+        margin: 0 auto;
+        grid-template-columns: 36px repeat(12, 36px) 46px;
+        grid-template-rows: repeat(3, 36px) 46px;
+        gap: 3px;
+        padding: 12px;
+        min-width: 500px; /* Ensure there's minimum width for scrolling */
+      }
+      
+      .coin-selector {
+        width: 100%;
+        max-width: 280px;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin: 0 auto;
+      }
+      
+      .coin-options {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+      }
+      
+      .coin-option {
+        width: 40px;
+        height: 40px;
+      }
+      
+      .control-group {
+        width: 100%;
+        max-width: 280px;
+        padding: 10px;
+        margin: 0 auto;
+      }
+      
+      .action-button, .cycle-button {
+        padding: 8px 12px;
+        font-size: 14px;
+        min-width: 100px;
+      }
+      
+      /* Fixed positions for moveable buttons */
+      .moveable-button {
+        position: absolute;
+        transform-origin: top left;
+      }
+      
+      /* Set fixed positions for moveable buttons */
+      .roulette-board .moveable-button[style*="top: 190px; left: 77px"] {
+        top: 135px !important;
+        left: 55px !important;
+        width: 140px !important;
+        font-size: 12px;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 190px; left: 300px"] {
+        top: 135px !important;
+        left: 215px !important;
+        width: 140px !important;
+        font-size: 12px;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 190px; left: 519px"] {
+        top: 135px !important;
+        left: 375px !important;
+        width: 140px !important;
+        font-size: 12px;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 77px"] {
+        top: 170px !important;
+        left: 55px !important;
+        width: 60px !important;
+        font-size: 12px;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 187px"] {
+        top: 170px !important;
+        left: 135px !important;
+        width: 60px !important;
+        font-size: 12px;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 300px"] {
+        top: 170px !important;
+        left: 215px !important;
+        width: 45px !important;
+        padding: 12px !important;
+        font-size: 12px;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 410px"],
+      .roulette-board .moveable-button[style*="top: 233px; left: 405px"] {
+        top: 170px !important;
+        left: 280px !important;
+        width: 45px !important;
+        padding: 12px !important;
+        font-size: 12px;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 520px"] {
+        top: 170px !important;
+        left: 345px !important;
+        width: 60px !important;
+        font-size: 12px;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 632px"] {
+        top: 170px !important;
+        left: 425px !important;
+        width: 60px !important;
+        font-size: 12px;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .roulette-board {
+        grid-template-columns: 30px repeat(12, 30px) 36px;
+        grid-template-rows: repeat(3, 30px) 36px;
+        gap: 2px;
+        padding: 8px;
+        transform: scale(0.85);
+        min-width: 440px;
+      }
+      
+      .number-tile {
+        font-size: 12px;
+      }
+      
+      .button-tile {
+        font-size: 12px;
+      }
+
+      .coin {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+      }
+      
+      .coin-selector h2 {
+        font-size: 14px;
+        margin: 5px 0;
+      }
+      
+      .control-group {
+        padding: 8px;
+      }
+      
+      /* Further adjust the position of the buttons */
+      .roulette-board .moveable-button[style*="top: 190px; left: 77px"] {
+        top: 112px !important;
+        left: 46px !important;
+        width: 115px !important;
+        font-size: 11px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 190px; left: 300px"] {
+        top: 112px !important;
+        left: 178px !important;
+        width: 115px !important;
+        font-size: 11px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 190px; left: 519px"] {
+        top: 112px !important;
+        left: 310px !important;
+        width: 115px !important;
+        font-size: 11px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 77px"] {
+        top: 140px !important;
+        left: 46px !important;
+        width: 50px !important;
+        font-size: 10px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 187px"] {
+        top: 140px !important;
+        left: 112px !important;
+        width: 50px !important;
+        font-size: 10px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 300px"] {
+        top: 140px !important;
+        left: 178px !important;
+        width: 38px !important;
+        padding: 10px !important;
+        font-size: 10px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 410px"],
+      .roulette-board .moveable-button[style*="top: 233px; left: 405px"] {
+        top: 140px !important;
+        left: 232px !important;
+        width: 38px !important;
+        padding: 10px !important;
+        font-size: 10px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 520px"] {
+        top: 140px !important;
+        left: 285px !important;
+        width: 50px !important;
+        font-size: 10px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 632px"] {
+        top: 140px !important;
+        left: 350px !important;
+        width: 50px !important;
+        font-size: 10px !important;
+      }
+    }
+    
+    /* Smallest screens */
+    @media (max-width: 400px) {
+      h1 {
+        font-size: 18px;
+        margin: 35px 0 10px;
+      }
+      
+      .control-group {
+        padding: 5px;
+      }
+      
+      .action-button, .cycle-button {
+        font-size: 12px;
+        padding: 6px 8px;
+        min-width: 80px;
+        margin-bottom: 5px;
+      }
+      
+      .coin-selector {
+        padding: 5px;
+      }
+      
+      .coin-option {
+        width: 30px;
+        height: 30px;
+        font-size: 10px;
+      }
+      
+      .new-coin-form {
+        font-size: 12px;
+      }
+      
+      .new-coin-form input[type="number"] {
+        width: 50px;
+        padding: 3px;
+      }
+      
+      .new-coin-form button {
+        padding: 4px 5px;
+        font-size: 11px;
+      }
+      
+      /* Change the board to be more compact */
+      .roulette-board {
+        transform: scale(0.7);
+        min-width: 400px;
+        margin-left: -25px;
+      }
+
+      /* Add horizontal scroll indicator */
+      .board-container::after {
+        content: "← Scroll to see more →";
+        display: block;
+        text-align: center;
+        font-size: 12px;
+        color: #fff;
+        margin-top: 5px;
+      }
+      
+      /* Final adjustments to the button positions for smallest screens */
+      .roulette-board .moveable-button[style*="top: 190px; left: 77px"] {
+        top: 95px !important;
+        left: 38px !important;
+        width: 95px !important;
+        font-size: 9px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 190px; left: 300px"] {
+        top: 95px !important;
+        left: 148px !important;
+        width: 95px !important;
+        font-size: 9px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 190px; left: 519px"] {
+        top: 95px !important;
+        left: 258px !important;
+        width: 95px !important;
+        font-size: 9px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 77px"] {
+        top: 120px !important;
+        left: 38px !important;
+        width: 40px !important;
+        font-size: 9px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 187px"] {
+        top: 120px !important;
+        left: 93px !important;
+        width: 40px !important;
+        font-size: 9px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 300px"] {
+        top: 120px !important;
+        left: 148px !important;
+        width: 30px !important;
+        padding: 8px !important;
+        font-size: 9px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 410px"],
+      .roulette-board .moveable-button[style*="top: 233px; left: 405px"] {
+        top: 120px !important;
+        left: 193px !important;
+        width: 30px !important;
+        padding: 8px !important;
+        font-size: 9px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 520px"] {
+        top: 120px !important;
+        left: 238px !important;
+        width: 40px !important;
+        font-size: 9px !important;
+      }
+      
+      .roulette-board .moveable-button[style*="top: 233px; left: 632px"] {
+        top: 120px !important;
+        left: 293px !important;
+        width: 40px !important;
+        font-size: 9px !important;
+      }
+    }
+
+    @keyframes tileSelect {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 10px white;
+      }
+      50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px hsl(220, 73%, 63%);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px hsl(220, 73%, 63%);
+      }
+    }
+
+    @keyframes pageTransitionIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pageTransitionOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="button" id="backButton">
+    <div class="button-box">
+      <span class="button-elem">
+        <svg viewBox="0 0 46 40" xmlns="http://www.w3.org/2000/svg">
+          <path d="M46 20.038c0-.7-.3-1.5-.8-2.1l-16-17c-1.1-1-3.2-1.4-4.4-.3-1.2 1.1-1.2 3.3 0 4.4l11.3 11.9H3c-1.7 0-3 1.3-3 3s1.3 3 3 3h33.1l-11.3 11.9c-1 1-1.2 3.3 0 4.4 1.2 1.1 3.3.8 4.4-.3l16-17c.5-.5.8-1.1.8-1.9z"></path>
+        </svg>
+      </span>
+    </div>
+  </button>
+  <h1>Roulette Assistant</h1>
+  <div class="game-container">
+    <!-- Coin Selector Panel -->
+    <div class="coin-selector">
+      <h2>Coins</h2>
+      <div class="coin-options" id="coin-options">
+        <!-- Default coin type -->
+        <div class="coin-option active" data-coin-id="1" data-value="0.05" style="background-color: #ffd700;">5c</div>
+      </div>
+      <!-- New Coin Form -->
+      <div class="new-coin-form">
+        <label>
+          Value:
+          <input type="number" id="new-coin-value" step="0.01" placeholder="0.25">
+        </label>
+        <button id="add-coin-button">Add</button>
+      </div>
+    </div>
+    
+    <!-- Board Container -->
+    <div class="board-container">
+      <div class="roulette-board">
+        <!-- Numeric Tiles -->
+        <div class="number-tile green">0</div>
+        <div class="number-tile red">3</div>
+        <div class="number-tile black">6</div>
+        <div class="number-tile red">9</div>
+        <div class="number-tile red">12</div>
+        <div class="number-tile black">15</div>
+        <div class="number-tile red">18</div>
+        <div class="number-tile red">21</div>
+        <div class="number-tile black">24</div>
+        <div class="number-tile red">27</div>
+        <div class="number-tile red">30</div>
+        <div class="number-tile black">33</div>
+        <div class="number-tile red">36</div>
+        <div class="button-tile">2:1</div> <!-- Row 1 divider -->
+        <div class="number-tile black">2</div>
+        <div class="number-tile red">5</div>
+        <div class="number-tile black">8</div>
+        <div class="number-tile black">11</div>
+        <div class="number-tile red">14</div>
+        <div class="number-tile black">17</div>
+        <div class="number-tile black">20</div>
+        <div class="number-tile red">23</div>
+        <div class="number-tile black">26</div>
+        <div class="number-tile black">29</div>
+        <div class="number-tile red">32</div>
+        <div class="number-tile black">35</div>
+        <div class="button-tile">2:1</div> <!-- Row 2 divider -->
+        <div class="number-tile red">1</div>
+        <div class="number-tile black">4</div>
+        <div class="number-tile red">7</div>
+        <div class="number-tile black">10</div>
+        <div class="number-tile black">13</div>
+        <div class="number-tile red">16</div>
+        <div class="number-tile red">19</div>
+        <div class="number-tile black">22</div>
+        <div class="number-tile red">25</div>
+        <div class="number-tile black">28</div>
+        <div class="number-tile black">31</div>
+        <div class="number-tile red">34</div>
+        <div class="button-tile">2:1</div> <!-- Row 3 divider -->
+        <!-- Extra Bet Areas (all are valid bet fields) -->
+        <div class="moveable-button" style="top: 190px; left: 77px; width: 193px;" data-multiplier="12">1 to 12</div>
+        <div class="moveable-button" style="top: 190px; left: 300px; width: 190px;" data-multiplier="12">13 to 24</div>
+        <div class="moveable-button" style="top: 190px; left: 519px; width: 193px;" data-multiplier="12">25 to 36</div>
+        <div class="moveable-button" style="top: 233px; left: 77px; width: 82px;" data-multiplier="2">1 to 18</div>
+        <div class="moveable-button" style="top: 233px; left: 187px; width: 82px;" data-multiplier="2">Even</div>
+        <div class="moveable-button red" style="top: 233px; left: 300px; width: 85px; padding: 17px;" data-multiplier="2"></div>
+        <div class="moveable-button black" style="top: 233px; left: 405px; width: 85px; padding: 17px;" data-multiplier="2"></div>
+        <div class="moveable-button" style="top: 233px; left: 520px; width: 80px;" data-multiplier="2">Odd</div>
+        <div class="moveable-button" style="top: 233px; left: 632px; width: 80px;" data-multiplier="2">19 to 36</div>
+      </div>
+      <!-- Multiplier Display and Calculate Win -->
+      <div id="multiplier-display"></div>
+      <button id="calc-win-button" class="action-button">Calculate Win</button>
+      <div id="win-display"></div>
+    </div>
+    
+    <!-- Control Panel -->
+    <div class="control-group">
+      <label for="coin-input">Number of Coins (for random placement):</label>
+      <input type="number" id="coin-input" value="3" min="1" max="100">
+      <button id="rb-extra-toggle" class="cycle-button">Red/Black Extra Bet: Off</button>
+      <button id="even-extra-toggle" class="cycle-button">Even Money Extra Bet: Off</button>
+      <button id="place-bet-button" class="action-button">Place Bet (Random)</button>
+      <button id="clear-board-button" class="action-button">Clear Board</button>
+      <button id="undo-button" class="action-button">Undo</button>
+    </div>
+  </div>
+
+<script>  
+// Global action history stack for undo functionality.
+const actionHistory = [];
+
+// Utility: Generate a random hex color.
+function getRandomColor() {
+  return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+}
+
+// Global coin type variables.
+let currentCoin = { id: "1", value: 0.05, color: "#ffd700" };  // default coin type
+let coinTypeCounter = 2; // next coin id
+
+// Toggle flags for extra bets.
+let rbExtraEnabled = false;
+let evenExtraEnabled = false;
+
+document.addEventListener('DOMContentLoaded', function() {
+
+  // ----------------------------
+  // Global helper: Get all bet tiles.
+  // ----------------------------
+  function getPotentialTiles() {
+    return Array.from(document.querySelectorAll('.number-tile, .moveable-button, .button-tile'));
+  }
+
+  // ----------------------------
+  // Coin Selector Logic
+  // ----------------------------
+  const coinOptions = document.querySelectorAll('.coin-option');
+  coinOptions.forEach(option => {
+    option.addEventListener('click', () => {
+      coinOptions.forEach(opt => opt.classList.remove('active'));
+      option.classList.add('active');
+      currentCoin = {
+        id: option.getAttribute('data-coin-id'),
+        value: parseFloat(option.getAttribute('data-value')),
+        color: option.style.backgroundColor
+      };
+    });
+  });
+
+  // ----------------------------
+  // New Coin Form
+  // ----------------------------
+  document.getElementById('add-coin-button').addEventListener('click', () => {
+    const valueInput = document.getElementById('new-coin-value');
+    const coinValue = parseFloat(valueInput.value);
+    if (isNaN(coinValue) || coinValue <= 0) {
+      alert("Please enter a valid coin value.");
+      return;
+    }
+    const randomColor = getRandomColor();
+    const newCoinOption = document.createElement('div');
+    newCoinOption.classList.add('coin-option');
+    newCoinOption.setAttribute('data-coin-id', coinTypeCounter.toString());
+    newCoinOption.setAttribute('data-value', coinValue.toString());
+    newCoinOption.style.backgroundColor = randomColor;
+    newCoinOption.textContent = coinValue < 1 ? `${coinValue * 100}c` : `$${coinValue}`;
+    newCoinOption.addEventListener('click', () => {
+      const allOptions = document.querySelectorAll('.coin-option');
+      allOptions.forEach(opt => opt.classList.remove('active'));
+      newCoinOption.classList.add('active');
+      currentCoin = {
+        id: newCoinOption.getAttribute('data-coin-id'),
+        value: parseFloat(newCoinOption.getAttribute('data-value')),
+        color: newCoinOption.style.backgroundColor
+      };
+    });
+    document.getElementById('coin-options').appendChild(newCoinOption);
+    coinTypeCounter++;
+    valueInput.value = "";
+  });
+
+  // ----------------------------
+  // Toggle Extra Bets (for manual placement)
+  // ----------------------------
+  const rbToggleButton = document.getElementById('rb-extra-toggle');
+  const evenToggleButton = document.getElementById('even-extra-toggle');
+  rbToggleButton.addEventListener('click', () => {
+    rbExtraEnabled = !rbExtraEnabled;
+    rbToggleButton.textContent = `Red/Black Extra Bet: ${rbExtraEnabled ? "On" : "Off"}`;
+  });
+  evenToggleButton.addEventListener('click', () => {
+    evenExtraEnabled = !evenExtraEnabled;
+    evenToggleButton.textContent = `Even Money Extra Bet: ${evenExtraEnabled ? "On" : "Off"}`;
+  });
+
+  // ----------------------------
+  // Manual Coin Placement (applied to all bet fields)
+  // ----------------------------
+  const allTiles = document.querySelectorAll('.number-tile, .button-tile, .moveable-button');
+  allTiles.forEach(tile => {
+    tile.addEventListener('click', function(e) {
+      e.stopPropagation(); // Prevent event bubbling
+      if (tile.classList.contains('button-tile')) {
+        // For 2:1 tiles, ensure they're clickable by adjusting z-index
+        tile.style.zIndex = '10';
+      }
+      placeCoinOnTile(tile, currentCoin);
+    });
+  });
+
+  // ----------------------------
+  // Clear Board
+  // ----------------------------
+  function clearBoard() {
+    const containers = getPotentialTiles();
+    containers.forEach(container => {
+      const coins = container.querySelectorAll('.coin');
+      coins.forEach(coin => coin.remove());
+    });
+    document.getElementById('win-display').textContent = "";
+    actionHistory.length = 0;
+  }
+
+  // ----------------------------
+  // Place a Coin on a Tile
+  // ----------------------------
+  function placeCoinOnTile(element, coinType) {
+    let aggregated = element.querySelector('.aggregated-coin');
+    if (aggregated) {
+      let currentTotal = parseFloat(aggregated.dataset.total) || 0;
+      let newTotal = currentTotal + coinType.value;
+      aggregated.dataset.total = newTotal;
+      updateCoinDisplay(aggregated, newTotal);
+      // Record placement for undo.
+      actionHistory.push({ tile: element });
+    } else {
+      const coin = document.createElement('div');
+      coin.classList.add('coin', 'aggregated-coin');
+      coin.style.backgroundColor = coinType.color;
+      coin.dataset.total = coinType.value;
+      updateCoinDisplay(coin, coinType.value);
+      element.appendChild(coin);
+      // Position the coin in the center.
+      const rect = element.getBoundingClientRect();
+      coin.style.left = `${(rect.width - 35) / 2}px`;
+      coin.style.top = `${(rect.height - 35) / 2}px`;
+      // Record placement for undo.
+      actionHistory.push({ tile: element });
+    }
+    
+    // Update the multiplier display.
+    updateMultiplierDisplay();
+  }
+
+  // ----------------------------
+  // Update Coin Display
+  // ----------------------------
+  function updateCoinDisplay(coin, value) {
+    let displayValue = value < 1 ? `${Math.round(value * 100)}¢` : `$${value}`;
+    coin.textContent = displayValue;
+  }
+
+  // ----------------------------
+  // Undo Last Placement
+  // ----------------------------
+  document.getElementById('undo-button').addEventListener('click', () => {
+    if (actionHistory.length === 0) {
+      return;
+    }
+    const lastAction = actionHistory.pop();
+    const lastTile = lastAction.tile;
+    const coin = lastTile.querySelector('.aggregated-coin');
+    if (coin) {
+      lastTile.removeChild(coin);
+    }
+    updateMultiplierDisplay();
+  });
+
+  // ----------------------------
+  // Calculate Potential Win
+  // ----------------------------
+  function calculatePotentialWin() {
+    let totalStake = 0;
+    let potentialWin = 0;
+    
+    // Get all coins from the board.
+    getPotentialTiles().forEach(tile => {
+      const aggregatedCoin = tile.querySelector('.aggregated-coin');
+      if (aggregatedCoin) {
+        const betAmount = parseFloat(aggregatedCoin.dataset.total);
+        totalStake += betAmount;
+        
+        // Apply multiplier.
+        let multiplier = 36;  // Default is single number.
+        
+        // Determine the type of bet.
+        if (tile.classList.contains('button-tile')) {
+          // Row bet (2:1 odds).
+          if (tile.textContent === "2:1") {
+            multiplier = 3;
+          }
+        } else if (tile.classList.contains('moveable-button')) {
+          // Dozen, column or other multipler-based bet.
+          if (tile.dataset.multiplier) {
+            multiplier = parseInt(tile.dataset.multiplier);
+          }
+        }
+        
+        // Add potential win (bet amount * multiplier).
+        potentialWin += betAmount * multiplier;
+      }
+    });
+    
+    // Return a formatted string with both pieces of info.
+    return {
+      stakeAmount: totalStake.toFixed(2),
+      winAmount: potentialWin.toFixed(2)
+    };
+  }
+
+  // ----------------------------
+  // Update Multiplier Display
+  // ----------------------------
+  function updateMultiplierDisplay() {
+    const stats = calculatePotentialWin();
+    const displayElement = document.getElementById('multiplier-display');
+    displayElement.textContent = `Total bet: $${stats.stakeAmount} | Potential win: $${stats.winAmount}`;
+  }
+
+  // ----------------------------
+  // Calculate Win Button
+  // ----------------------------
+  document.getElementById('calc-win-button').addEventListener('click', () => {
+    const stats = calculatePotentialWin();
+    document.getElementById('win-display').innerHTML = `
+      <div style="margin-top: 10px; font-size: 16px;">
+        <p>Total bet: $${stats.stakeAmount}</p>
+        <p>Potential win: $${stats.winAmount}</p>
+      </div>
+    `;
+  });
+
+  // ----------------------------
+  // Random Bet Placement
+  // ----------------------------
+  document.getElementById('place-bet-button').addEventListener('click', () => {
+    const coinCount = parseInt(document.getElementById('coin-input').value) || 1;
+    const tiles = getPotentialTiles();
+    
+    // Filter tiles based on extra bet settings.
+    const eligibleTiles = tiles.filter(tile => {
+      if (tile.classList.contains('moveable-button') && (tile.classList.contains('red') || tile.classList.contains('black'))) {
+        return rbExtraEnabled;
+      }
+      if (tile.classList.contains("button-tile") && tile.textContent.trim() === "2:1") {
+        return evenExtraEnabled;
+      }
+      return true;
+    });
+    
+    clearBoard();
+    
+    // Create an array to store selected tiles
+    const selectedTiles = [];
+    while (selectedTiles.length < coinCount) {
+      const randomIndex = Math.floor(Math.random() * eligibleTiles.length);
+      const selectedTile = eligibleTiles[randomIndex];
+      if (!selectedTiles.includes(selectedTile)) {
+        selectedTiles.push(selectedTile);
+      }
+    }
+    
+    // Place coins with staggered animation
+    selectedTiles.forEach((tile, index) => {
+      setTimeout(() => {
+        placeCoinOnTile(tile, currentCoin);
+        // Add animation class to the tile
+        tile.classList.add('animate');
+        setTimeout(() => {
+          tile.classList.remove('animate');
+        }, 500);
+      }, index * 100);
+    });
+  });
+
+  // ----------------------------
+  // Clear Board Button
+  // ----------------------------
+  document.getElementById('clear-board-button').addEventListener('click', clearBoard);
+  
+});
+
+// Update the back button click handler
+document.getElementById('backButton').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.body.style.animation = 'pageTransitionOut 0.5s ease forwards';
+    setTimeout(() => {
+        window.location.href = '../index.html';
+    }, 500);
+});
+</script>
+<script src="../../cursor_fix.js"></script>
+</body>
+</html>

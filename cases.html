@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Cases Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, 
+                hsl(220, 100%, 1%) 0%,
+                hsl(220, 70%, 12%) 50%,
+                hsl(220, 100%, 1%) 100%
+            );
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
+            opacity: 0;
+            animation: pageTransitionIn 0.5s ease-out forwards;
+        }
+
+        @keyframes pageTransitionIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pageTransitionOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, hsla(220, 73%, 63%, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, hsla(220, 73%, 63%, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            background-attachment: fixed;
+        }
+
+        body::after {
+            display: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: auto;
+            background: transparent;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .case-container {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+
+        .case {
+            position: relative;
+            z-index: 4;
+            flex: 1;
+            margin: 10px;
+            background-color: transparent;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        img {
+            width: 200px;
+            height: auto;
+        }
+
+        h1 {
+            position: relative;
+            z-index: 5;
+            color: white;
+            text-align: center;
+        }
+
+        .difficulty-label {
+            position: relative;
+            z-index: 6;
+            color: white;
+            font-weight: bold;
+            margin: 20px 0 5px 0;
+            position: absolute;
+            margin-top: 5px;
+            margin-left: -38px;
+            font-size: 18px;
+        }
+
+        .difficulty-select {
+            position: relative;
+            z-index: 7;
+            margin: 0 0 20px 0;
+            position: absolute;
+            margin-top: 1.5px;
+            margin-left: 120px;
+            height: 30px;
+            background-color: rgba(44, 62, 80, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .difficulty-select option {
+            background-color: rgba(44, 62, 80, 0.8);
+            color: white;
+        }
+
+        .bet-size-label {
+            position: relative;
+            z-index: 8;
+            color: white;
+            font-weight: bold;
+            margin: 20px 0 5px 0;
+            margin-top: 6px;
+            position: absolute;
+            margin-left: 260px;
+            font-size: 18px;
+        }
+
+        .bet-size-container {
+            position: relative;
+            z-index: 9;
+            display: flex;
+            align-items: center;
+            margin: 0 0 20px 0;
+        }
+
+        .bet-size-input {
+            position: relative;
+            z-index: 10;
+            width: 80px;
+            padding: 5px;
+            margin-right: 5px;
+            position: absolute;
+            margin-left: 340px;
+            margin-top: 30px;
+            height: 21px;
+            background-color: transparent;
+            color: white;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .bet-size-button {
+            position: relative;
+            z-index: 11;
+            background-color: transparent;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+            height: 33px;
+            margin-left: 5px;
+            min-width: 50px;
+            position: absolute;
+            margin-left: 445px;
+            margin-top: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .bet-size-button-1 {
+            position: relative;
+            z-index: 12;
+            background-color: transparent;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+            height: 33px;
+            margin-left: 5px;
+            min-width: 50px;
+            position: absolute;
+            margin-left: 500px;
+            margin-top: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .case-color-label {
+            position: relative;
+            z-index: 13;
+            color: white;
+            font-weight: bold;
+            margin: 20px 0 5px 0;
+            position: absolute;
+            margin-left: 570px;
+            margin-top: -15px;
+            font-size: 18px;
+        }
+
+        .case-color-select {
+            position: relative;
+            z-index: 14;
+            margin: 0 0 20px 0;
+            position: absolute;
+            margin-top: -21px;
+            margin-left: 755px;
+            height: 35px;
+            background-color: rgba(44, 62, 80, 0.8);
+            color: white;
+            padding: 5px;
+            font-size: 16px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .case-color-select option {
+            background-color: rgba(44, 62, 80, 0.8);
+            color: white;
+        }
+
+        .button {
+            display: block;
+            position: relative;
+            width: 56px;
+            height: 56px;
+            margin: 0;
+            overflow: hidden;
+            outline: none;
+            background-color: transparent;
+            cursor: pointer;
+            border: 0;
+        }
+
+        .button:before,
+        .button:after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            inset: 7px;
+        }
+
+        .button:before {
+            border: 4px solid #f0eeef;
+            transition: opacity 0.4s cubic-bezier(0.77, 0, 0.175, 1) 80ms,
+                transform 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) 80ms;
+        }
+
+        .button:after {
+            border: 4px solid #96daf0;
+            transform: scale(1.3);
+            transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+                transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 0;
+        }
+
+        .button:hover:before,
+        .button:focus:before {
+            opacity: 0;
+            transform: scale(0.7);
+            transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+                transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .button:hover:after,
+        .button:focus:after {
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 0.4s cubic-bezier(0.77, 0, 0.175, 1) 80ms,
+                transform 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) 80ms;
+        }
+
+        .button-box {
+            display: flex;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .button-elem {
+            display: block;
+            width: 20px;
+            height: 20px;
+            margin: 17px 18px 0 18px;
+            transform: rotate(180deg);
+            fill: #f0eeef;
+        }
+
+        .button:hover .button-box {
+            transition: 0.4s;
+            transform: translateX(-56px);
+        }
+
+        /* Mobile Support */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                width: 100%;
+                padding: 10px;
+                position: relative;
+            }
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+            .difficulty-label,
+            .difficulty-select,
+            .bet-size-label,
+            .bet-size-container,
+            .case-color-label,
+            .case-color-select {
+                position: static;
+                margin: 10px 0;
+                text-align: left;
+                width: 100%;
+            }
+            .difficulty-select,
+            .case-color-select {
+                width: 100%;
+                max-width: 300px;
+                padding: 5px;
+            }
+            .bet-size-container {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 5px;
+                margin: 10px;
+                position: static;
+            }
+            .bet-size-input,
+            .bet-size-button,
+            .bet-size-button-1 {
+                position: static;
+                margin: 0;
+            }
+            .bet-size-input {
+                width: 80px;
+            }
+            .bet-size-button,
+            .bet-size-button-1 {
+                min-width: 40px;
+                height: 33px;
+            }
+            .back-button {
+                top: 10px;
+                left: 10px;
+                font-size: 24px;
+                width: 45px;
+                height: 45px;
+            }
+            .case-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            img {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        #backButton {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: transparent;
+            cursor: pointer;
+            border: 0;
+            width: 56px;
+            height: 56px;
+            margin: 0;
+            overflow: hidden;
+            outline: none;
+            z-index: 1001;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Cases Assistant</h1>
+    <button class="button" id="backButton">
+      <div class="button-box">
+        <span class="button-elem">
+          <svg viewBox="0 0 46 40" xmlns="http://www.w3.org/2000/svg">
+            <path d="M46 20.038c0-.7-.3-1.5-.8-2.1l-16-17c-1.1-1-3.2-1.4-4.4-.3-1.2 1.1-1.2 3.3 0 4.4l11.3 11.9H3c-1.7 0-3 1.3-3 3s1.3 3 3 3h33.1l-11.3 11.9c-1 1-1.2 3.3 0 4.4 1.2 1.1 3.3.8 4.4-.3l16-17c.5-.5.8-1.1.8-1.9z"></path>
+          </svg>
+        </span>
+      </div>
+    </button>
+
+    <!-- Difficulty Label -->
+    <div class="difficulty-label">Select Difficulty:</div>
+    <select id="difficulty" class="difficulty-select" onchange="updateCaseDisplay()">
+        <option value="easy">Easy Mode</option>
+        <option value="medium">Medium Mode</option>
+        <option value="hard">Hard Mode</option>
+        <option value="expert">Expert Mode</option>
+    </select>
+
+    <!-- Bet Size Label -->
+    <div class="bet-size-label">Bet Size:</div>
+    <div class="bet-size-container">
+        <input type="number" id="betSize" class="bet-size-input" value="0.01" step="0.01" onchange="updateCaseDisplay()">
+        <button class="bet-size-button-1" onclick="adjustBetSize(0.5)">1/2</button>
+        <button class="bet-size-button" onclick="adjustBetSize(2)">2x</button>
+    </div>
+
+    <!-- Case Color Label -->
+    <div class="case-color-label">Choose Case Color:</div>
+    <select id="caseColor" class="case-color-select" onchange="updateCaseDisplay()">
+        <option value="gold">Gold</option>
+        <option value="purple">Purple</option>
+        <option value="green">Green</option>
+        <option value="red">Red</option>
+        <option value="blue">Blue</option>
+        <option value="cyan">Cyan</option>
+    </select>
+
+    <div id="caseDisplay" class="case-container">
+        <!-- Cases will be dynamically updated here -->
+    </div>
+</div>
+
+<script>
+const multipliers = {
+    easy: {
+        gray: { values: [0.1], chances: [41], probabilities: [0.41] },
+        cyan: { values: [0.4], chances: [35], probabilities: [0.35] },
+        blue: { values: [1.09], chances: [10], probabilities: [0.10] },
+        red: { values: [2], chances: [7], probabilities: [0.07] },
+        green: { values: [3], chances: [4], probabilities: [0.04] },
+        purple: { values: [10], chances: [2], probabilities: [0.02] },
+        gold: { values: [23], chances: [1], probabilities: [0.01] }
+    },
+    medium: {
+        gray: { values: [0], chances: [30], probabilities: [0.30] },
+        cyan: { values: [0.2, 0.4], chances: [27, 18], probabilities: [0.27, 0.18] },
+        blue: { values: [1.5, 2], chances: [13, 6], probabilities: [0.13, 0.06] },
+        red: { values: [3.5, 7.5], chances: [3, 1.5], probabilities: [0.03, 0.015] },
+        green: { values: [10, 15], chances: [0.85, 0.40], probabilities: [0.0085, 0.004] },
+        purple: { values: [41], chances: [0.15], probabilities: [0.0015] },
+        gold: { values: [115], chances: [0.1], probabilities: [0.001] }
+    },
+    hard: {
+        gray: { values: [0], chances: [35], probabilities: [0.35] },
+        cyan: { values: [0.2, 0.4, 0.8], chances: [25, 12, 10], probabilities: [0.25, 0.12, 0.10] },
+        blue: { values: [1.5, 3, 8], chances: [10, 5, 2], probabilities: [0.10, 0.05, 0.02] },
+        red: { values: [10, 15], chances: [0.4, 0.3], probabilities: [0.004, 0.003] },
+        green: { values: [35, 50], chances: [0.2, 0.04], probabilities: [0.002, 0.0004] },
+        purple: { values: [100, 250], chances: [0.03, 0.015], probabilities: [0.0003, 0.00015] },
+        gold: { values: [495, 1000], chances: [0.01, 0.005], probabilities: [0.0001, 0.00005] }
+    },
+    expert: {
+        gray: { values: [0], chances: [35.39], probabilities: [0.3539] },
+        cyan: { values: [0.15, 0.3, 0.7], chances: [20, 15, 15], probabilities: [0.20, 0.15, 0.15] },
+        blue: { values: [1.5, 5, 7], chances: [8, 3, 2], probabilities: [0.08, 0.03, 0.02] },
+        red: { values: [10, 15, 20], chances: [0.8, 0.5, 0.2], probabilities: [0.008, 0.005, 0.002] },
+        green: { values: [50, 75, 100], chances: [0.04, 0.03, 0.02], probabilities: [0.0004, 0.0003, 0.0002] },
+        purple: { values: [250, 460, 850], chances: [0.01, 0.005, 0.003], probabilities: [0.0001, 0.00005, 0.00003] },
+        gold: { values: [1500, 3500, 10000], chances: [0.0012, 0.0006, 0.0002], probabilities: [0.000012, 0.000006, 0.000002] }
+    }
+};
+
+function updateCaseDisplay() {
+    const difficulty = document.getElementById('difficulty').value;
+    const color = document.getElementById('caseColor').value;
+    const betSize = parseFloat(document.getElementById('betSize').value);
+    const caseData = multipliers[difficulty][color];
+
+    let caseDisplay = '';
+    for (let i = 0; i < caseData.values.length; i++) {
+        const multiplier = caseData.values[i];
+        const winChance = caseData.chances[i];
+        const probability = caseData.probabilities[i];
+        const winAmount = (betSize * multiplier).toFixed(2);
+        const probabilityFormatted = (1 / probability).toFixed(0); // Format as "1 in X"
+
+        caseDisplay += `
+            <div class="case">
+                <img src="images/${capitalize(color)}/${color}${i + 1}.png" alt="${color} ${i + 1}">
+                <div>
+                    <strong>Multiplier:</strong> ${multiplier}x<br>
+                    <strong>Win Amount:</strong> $${winAmount}<br>
+                    <strong>Win Chance:</strong> ${winChance}%<br>
+                    <strong>Probability:</strong> 1 in ${probabilityFormatted}
+                </div>
+            </div>
+        `;
+    }
+
+    document.getElementById('caseDisplay').innerHTML = caseDisplay;
+}
+function adjustBetSize(factor) {
+    const betSizeInput = document.getElementById('betSize');
+    let newValue = parseFloat(betSizeInput.value) * factor;
+
+    // If factor is 2 (for "2x" button)
+    if (factor === 2) {
+        // Ensure it keeps doubling, even if it goes below 0.01, no rounding to zero
+        newValue = newValue.toFixed(4); // Allow four decimal places if below 0.01
+    }
+
+    // If factor is 0.5 (for "1/2" button)
+    if (factor === 0.5) {
+        // Allow the value to go below 0.01 with up to four decimals
+        newValue = newValue < 0.01 ? newValue.toFixed(4) : newValue.toFixed(2); // Up to four decimals below 0.01, else 2 decimals
+    }
+
+    // Update the input field with the new value
+    betSizeInput.value = parseFloat(newValue); // Use parseFloat to make sure it remains a number
+    updateCaseDisplay(); // Ensure the display updates after adjusting bet size
+}
+
+function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+// Add page transition when leaving
+document.getElementById('backButton').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.body.style.animation = 'pageTransitionOut 0.5s ease forwards';
+    setTimeout(() => {
+        window.location.href = '../index.html';
+    }, 500);
+});
+
+// Initial display
+updateCaseDisplay();
+</script>
+
+</body>
+</html>
