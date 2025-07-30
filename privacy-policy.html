@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <title>GambleAssist Privacy Policy</title>
+  <style>
+    :root {
+      --background: 220 100% 1%;
+      --foreground: 220 100% 97%;
+      --muted: 220 51% 36%;
+      --muted-foreground: 220 100% 97%;
+      --popover: 220 70% 12%;
+      --popover-foreground: 220 100% 97%;
+      --card: 220 70% 12%;
+      --card-foreground: 220 100% 97%;
+      --border: 220 51% 36%;
+      --input: 220 51% 36%;
+      --primary: 220 73% 63%;
+      --primary-foreground: 220 89% 99%;
+      --secondary: 220 51% 36%;
+      --secondary-foreground: 220 100% 97%;
+      --accent: 220 51% 36%;
+      --accent-foreground: 220 100% 97%;
+      --destructive: 0 62.8% 30.6%;
+      --destructive-foreground: 0 0% 98%;
+      --ring: 220 73% 63%;
+      --radius: 0.75rem;
+    }
+
+    body, html {
+      cursor: none;
+      margin: 0;
+      background: linear-gradient(135deg, 
+        hsl(var(--background)) 0%,
+        hsl(var(--popover)) 50%,
+        hsl(var(--background)) 100%
+      ) fixed;
+      color: hsl(var(--foreground));
+      font-family: 'Montserrat', Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .cursor {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, rgba(255,255,255,0.8), rgba(255,255,255,0));
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+    }
+
+    .trail {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: radial-gradient(circle, rgba(255,255,255,0.6), rgba(255,255,255,0));
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      mix-blend-mode: difference;
+      animation: fadeOut 0.5s forwards;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+    }
+
+    .container {
+      text-align: center;
+      width: 100%;
+      margin-top: 20px;
+      text-shadow: 0 0 10px rgba(255,255,255,0.4),
+                   0 0 20px rgba(255,255,255,0.3),
+                   0 0 30px rgba(255,255,255,0.2);
+      min-height: calc(100vh - 100px);
+      background: none;
+      background-color: none;
+      background-image: none;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: none;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .privacy-card {
+      background: hsl(var(--card));
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius);
+      padding: 40px;
+      margin: 20px 0;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 25px hsla(var(--primary), 0.3);
+      text-align: left;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0 0 30px 0;
+      font-size: 2.5em;
+      color: hsl(var(--primary));
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(255,255,255,0.4);
+    }
+
+    h2 {
+      color: hsl(var(--primary));
+      font-size: 1.5em;
+      margin: 30px 0 15px 0;
+      font-weight: 600;
+    }
+
+    p {
+      color: hsl(var(--foreground));
+      line-height: 1.6;
+      margin: 15px 0;
+      font-size: 1.1em;
+    }
+
+    ul {
+      color: hsl(var(--foreground));
+      line-height: 1.8;
+      margin: 15px 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin: 8px 0;
+      font-size: 1.1em;
+    }
+
+    .highlight {
+      background: hsla(var(--primary), 0.1);
+      border-left: 4px solid hsl(var(--primary));
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: hsl(var(--primary));
+      color: hsl(var(--primary-foreground));
+      border: none;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-button:hover {
+      background: hsla(var(--primary), 0.8);
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px hsla(var(--primary), 0.5);
+    }
+
+    .site-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      color: white;
+      font-size: 16px;
+      background: none;
+      padding: 10px 0;
+      margin: 0;
+      text-shadow: 0 0 10px white, 0 0 20px white, 0 0 30px white;
+      z-index: 1000;
+    }
+
+    @media only screen and (max-width: 768px) {
+      .privacy-card {
+        padding: 20px;
+        margin: 10px;
+      }
+      
+      h1 {
+        font-size: 2em;
+      }
+      
+      h2 {
+        font-size: 1.3em;
+      }
+      
+      p, li {
+        font-size: 1em;
+      }
+      
+      .back-button {
+        top: 10px;
+        left: 10px;
+        padding: 10px 15px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="../index.html" class="back-button">
+    ← Back to GambleAssist
+  </a>
+
+  <div class="container">
+    <div class="wrapper">
+      <div class="privacy-card">
+        <h1>🚀 GambleAssist Privacy Policy</h1>
+        
+        <div class="highlight">
+          <p><strong>Last Updated:</strong> January 2025</p>
+          <p>GambleAssist is committed to protecting your privacy and ensuring transparency about how we handle your data.</p>
+        </div>
+
+        <h2>📊 Data Collection</h2>
+        <p>GambleAssist collects minimal data necessary for functionality:</p>
+        <ul>
+          <li><strong>Device Seed:</strong> A unique identifier for pattern synchronization between devices</li>
+          <li><strong>Game Interaction Data:</strong> Clicks and interactions on Stake.com for pattern automation</li>
+          <li><strong>Extension Settings:</strong> User preferences and configuration options</li>
+          <li><strong>Pattern Data:</strong> Generated patterns and game state information</li>
+        </ul>
+
+        <h2>🔒 Data Storage & Security</h2>
+        <p>All data is stored locally on your device using browser storage APIs. We do not maintain any external servers or databases containing your personal information.</p>
+        
+        <div class="highlight">
+          <p><strong>Local Server Connection:</strong> The extension connects to a local server (localhost:3001) for pattern synchronization. This connection is entirely local and does not transmit data to external servers.</p>
+        </div>
+
+        <h2>🚫 Data We Do NOT Collect</h2>
+        <ul>
+          <li>Personal identification information (name, email, address)</li>
+          <li>Financial or payment information</li>
+          <li>Authentication credentials</li>
+          <li>Browsing history outside of Stake.com</li>
+          <li>Location data</li>
+          <li>Health information</li>
+        </ul>
+
+        <h2>🌐 Third-Party Services</h2>
+        <p>GambleAssist does not integrate with any third-party services, analytics platforms, or advertising networks. We do not sell, trade, or transfer your data to any external parties.</p>
+
+        <h2>🔧 Data Usage</h2>
+        <p>The collected data is used exclusively for:</p>
+        <ul>
+          <li>Providing pattern automation features on Stake.com</li>
+          <li>Synchronizing patterns between the web application and browser extension</li>
+          <li>Remembering user preferences and settings</li>
+          <li>Improving extension functionality and user experience</li>
+        </ul>
+
+        <h2>📱 Browser Permissions</h2>
+        <p>GambleAssist requests the following browser permissions:</p>
+        <ul>
+          <li><strong>activeTab:</strong> To access the current tab when the extension is activated</li>
+          <li><strong>storage:</strong> To save user preferences and settings locally</li>
+          <li><strong>scripting:</strong> To inject content scripts for pattern automation</li>
+          <li><strong>Host permissions:</strong> To access Stake.com domains and local server for synchronization</li>
+        </ul>
+
+        <h2>🔄 Data Retention</h2>
+        <p>Data is retained only as long as the extension is installed and active. When you uninstall the extension, all locally stored data is automatically removed.</p>
+
+        <h2>👤 Your Rights</h2>
+        <p>You have the right to:</p>
+        <ul>
+          <li>Access your stored data through browser developer tools</li>
+          <li>Delete all stored data by uninstalling the extension</li>
+          <li>Disable the extension at any time</li>
+          <li>Contact us with privacy concerns</li>
+        </ul>
+
+        <h2>📞 Contact Information</h2>
+        <p>If you have any questions about this privacy policy or our data practices, please contact us through the GambleAssist platform.</p>
+
+        <div class="highlight">
+          <p><strong>Certification:</strong> We certify that we do not sell or transfer user data to third parties, we do not use data for purposes unrelated to the extension's functionality, and we do not use data for creditworthiness or lending purposes.</p>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <div class="footer-content">
+        <p>© 2025 GambleAssist. All rights reserved.</p>
+      </div>
+    </footer>
+  </div>
+
+  <div id="cursor" class="cursor"></div>
+
+  <script>
+    // Custom cursor effect
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', (event) => {
+      const x = event.pageX, y = event.pageY;
+      cursor.style.left = `${x - 10}px`;
+      cursor.style.top = `${y - 10}px`;
+      const trail = document.createElement('div');
+      trail.className = 'trail';
+      trail.style.left = `${x - 5}px`;
+      trail.style.top = `${y - 5}px`;
+      document.body.appendChild(trail);
+      setTimeout(() => { trail.remove(); }, 500);
+    });
+  </script>
+</body>
+</html> 
